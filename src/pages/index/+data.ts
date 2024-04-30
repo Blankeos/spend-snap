@@ -4,7 +4,7 @@ export type Data = Awaited<ReturnType<typeof data>>;
 
 async function data() {
   await new Promise((resolve) =>
-    setTimeout(resolve, 1500 + Math.random() * 1000)
+    setTimeout(resolve, 400 + Math.random() * 200)
   );
 
   return {
