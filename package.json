@@ -2,9 +2,9 @@
   "name": "example-with-tailwindcss",
   "type": "module",
   "scripts": {
-    "dev": "vinxi dev",
-    "build": "vinxi build",
-    "start": "vinxi start"
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
   },
   "dependencies": {
     "@felte/reporter-solid": "^1.2.10",
@@ -12,15 +12,12 @@
     "@libsql/client": "^0.6.0",
     "@lucia-auth/adapter-drizzle": "^1.0.7",
     "@node-rs/argon2": "^1.8.3",
-    "@solidjs/router": "^0.13.2",
-    "@solidjs/start": "^1.0.0-rc.0",
     "autoprefixer": "^10.4.19",
     "drizzle-orm": "^0.30.9",
     "lucia": "^3.2.0",
     "postcss": "^8.4.38",
     "solid-js": "^1.8.16",
-    "tailwindcss": "^3.4.3",
-    "vinxi": "^0.3.11"
+    "tailwindcss": "^3.4.3"
   },
   "engines": {
     "node": ">=18"
@@ -29,6 +26,9 @@
     "daisyui": "^4.10.2",
     "dotenv": "^16.4.5",
     "drizzle-kit": "^0.20.17",
-    "unplugin-icons": "^0.18.5"
+    "unplugin-icons": "^0.18.5",
+    "vike": "^0.4.171",
+    "vike-solid": "^0.4.5",
+    "vite": "^5.2.10"
   }
 }

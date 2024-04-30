@@ -1,20 +1,3 @@
-import { A, action, useAction } from "@solidjs/router";
-import { loginService } from "@/server/services/login";
-import { getRequestEvent } from "solid-js/web";
-
-const login = action(async (formData: FormData) => {
-  const event = getRequestEvent();
-  const cookie = event?.request.headers.get("cookie");
-
-  // Imagine this is a call to fetch
-  const username = formData.get("username") as string | null;
-  const password = formData.get("password") as string | null;
-
-  if (!username || !password) return { success: false };
-
-  await loginService({ username, password });
-});
-
 export default function Login() {
   return (
     <main class="text-center mx-auto text-gray-700 p-4">
