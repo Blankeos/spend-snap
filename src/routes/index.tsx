@@ -1,7 +1,5 @@
 import { A } from "@solidjs/router";
 import Counter from "@/components/Counter";
-import { createStore } from "solid-js/store";
-import { useCountContext } from "@/contexts/CountContext";
 
 export default function Home() {
   return (
