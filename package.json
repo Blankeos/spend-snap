@@ -14,6 +14,7 @@
     "@node-rs/argon2": "^1.8.3",
     "autoprefixer": "^10.4.19",
     "drizzle-orm": "^0.30.9",
+    "hono": "^4.2.9",
     "lucia": "^3.2.0",
     "postcss": "^8.4.38",
     "solid-js": "^1.8.16",
@@ -23,9 +24,11 @@
     "node": ">=18"
   },
   "devDependencies": {
+    "@hono/vite-dev-server": "^0.12.0",
     "daisyui": "^4.10.2",
     "dotenv": "^16.4.5",
     "drizzle-kit": "^0.20.17",
+    "typescript": "^5.4.5",
     "unplugin-icons": "^0.18.5",
     "vike": "^0.4.171",
     "vike-solid": "^0.4.5",

@@ -1,9 +1,10 @@
-import { useLocation } from "@solidjs/router";
+import { usePageContext } from "vike-solid/usePageContext";
 
 export default function Nav() {
-  const location = useLocation();
+  const pageContext = usePageContext();
+
   const active = (path: string) =>
-    path == location.pathname
+    path == pageContext.urlPathname
       ? "border-sky-600"
       : "border-transparent hover:border-sky-600";
   return (
