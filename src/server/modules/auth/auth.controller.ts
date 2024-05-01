@@ -20,36 +20,11 @@ const users = [
 
 export const authController = new Hono()
   .basePath("/auth")
-  .get(
-    "/",
-    // You can use this to validate inputs in POST.
-    // zValidator(
-    //   "json",
-    //   z.object({
-    //     id: z.number(),
-    //   })
-    // ),
-    async (c) => {
-      return c.json({
-        users: users,
-      });
-    }
-  )
-  .get("/:id", async (c) => {
-    const id = c.req.param("id");
-
-    if (!id) throw Error("No Id found.");
-
-    let _id: number;
-    try {
-      _id = parseInt(id);
-    } catch (e) {
-      throw Error("Invalid Id. Must be int.");
-    }
-
-    const user = users.find((u) => u.id === _id);
-
-    if (!user) throw Error("User not found.");
-
-    return c.json(user);
-  });
+  .get("/", async (c) => {
+    return c.json({
+      users: users,
+    });
+  })
+  .get("/login", async (c) => {})
+  .post("/register", async (c) => {})
+  .get("/logout", async (c) => {});

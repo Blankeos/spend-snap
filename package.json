@@ -5,7 +5,11 @@
     "//dev": "concurrently --names 'hono,vike' 'bun run --watch src/server/index.ts' 'bunx --bun vite'",
     "dev": "bunx --bun vite --host",
     "build": "tsc && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "dz:up": "bun run migrations/migrate.ts",
+    "dz:generate": "bun drizzle-kit generate:sqlite",
+    "dz:studio": "bun drizzle-kit studio",
+    "dz:check": "bun drizzle-kit check:sqlite"
   },
   "dependencies": {
     "@felte/reporter-solid": "^1.2.10",
@@ -29,6 +33,7 @@
     "@types/bun": "^1.1.1",
     "@types/nprogress": "^0.2.3",
     "daisyui": "^4.10.2",
+    "dotenv": "^16.4.5",
     "drizzle-kit": "^0.20.17",
     "nodemon": "^3.1.0",
     "typescript": "^5.4.5",
