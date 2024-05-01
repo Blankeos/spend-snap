@@ -15,6 +15,7 @@ import { tbValidator } from "@hono/typebox-validator";
 import { Type as T } from "@sinclair/typebox";
 import { authMiddlewares } from "./auth.middleware";
 import { lucia } from "@/server/lucia";
+import { login } from "./services/login.service";
 
 /** Fake database */
 const users = [
@@ -58,8 +59,12 @@ export const authController = new Hono()
     c.header("Set-Cookie", sessionCookie.serialize(), {
       append: true,
     });
+
+    return c.json({
+      success: true,
+    });
   })
-  .get(
+  .post(
     "/login",
     tbValidator(
       "json",
@@ -71,7 +76,7 @@ export const authController = new Hono()
     async (c) => {
       const validJSON = c.req.valid("json");
 
-      const { userId, sessionCookie } = await register({
+      const { userId, sessionCookie } = await login({
         username: validJSON.username,
         password: validJSON.password,
       });

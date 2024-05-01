@@ -6,14 +6,16 @@
     "dev": "bunx --bun vite --host",
     "build": "tsc && vite build",
     "preview": "vite preview",
-    "dz:up": "bun run migrations/migrate.ts",
+    "dz:up": "bun run scripts/migrate.ts",
     "dz:generate": "bun drizzle-kit generate:sqlite",
+    "dz:create": "bun drizzle-kit generate:sqlite --custom",
     "dz:studio": "bun drizzle-kit studio",
     "dz:check": "bun drizzle-kit check:sqlite"
   },
   "dependencies": {
     "@felte/reporter-solid": "^1.2.10",
     "@felte/solid": "^1.2.13",
+    "@felte/validator-superstruct": "^1.0.15",
     "@hono/typebox-validator": "^0.2.4",
     "@libsql/client": "^0.6.0",
     "@lucia-auth/adapter-drizzle": "^1.0.7",
@@ -28,6 +30,7 @@
     "nprogress": "^0.2.0",
     "postcss": "^8.4.38",
     "solid-js": "^1.8.16",
+    "superstruct": "^1.0.4",
     "tailwindcss": "^3.4.3"
   },
   "devDependencies": {

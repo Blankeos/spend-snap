@@ -13,6 +13,7 @@ app.route("/api", appRouter);
 app.get("*", async (c, next) => {
   const pageContextInit = {
     urlOriginal: c.req.url,
+    headers: c.req.header(),
   };
   const pageContext = await renderPage(pageContextInit);
   const { httpResponse } = pageContext;
@@ -25,11 +26,6 @@ app.get("*", async (c, next) => {
 
     return c.body(body);
   }
-});
-
-app.onError((err, c) => {
-  console.log("test");
-  return c.text("There is an error.");
 });
 
 console.log("Running at http://localhost:" + config.port);
