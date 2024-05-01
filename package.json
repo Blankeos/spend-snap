@@ -1,8 +1,9 @@
 {
-  "name": "example-with-tailwindcss",
+  "name": "spend-snap",
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "//dev": "concurrently --names 'hono,vike' 'bun run --watch src/server/index.ts' 'bunx --bun vite'",
+    "dev": "bunx --bun vite --host",
     "build": "tsc && vite build",
     "preview": "vite preview"
   },
@@ -23,19 +24,18 @@
     "solid-js": "^1.8.16",
     "tailwindcss": "^3.4.3"
   },
-  "engines": {
-    "node": ">=18"
-  },
   "devDependencies": {
     "@hono/vite-dev-server": "^0.12.0",
+    "@types/bun": "^1.1.1",
     "@types/nprogress": "^0.2.3",
     "daisyui": "^4.10.2",
-    "dotenv": "^16.4.5",
     "drizzle-kit": "^0.20.17",
+    "nodemon": "^3.1.0",
     "typescript": "^5.4.5",
     "unplugin-icons": "^0.18.5",
     "vike": "^0.4.171",
     "vike-solid": "^0.4.5",
-    "vite": "^5.2.10"
+    "vite": "^5.2.10",
+    "vite-node": "^1.5.3"
   }
 }

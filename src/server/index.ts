@@ -27,6 +27,13 @@ app.get("*", async (c, next) => {
   }
 });
 
+app.onError((err, c) => {
+  console.log("test");
+  return c.text("There is an error.");
+});
+
+console.log("Running at http://localhost:" + config.port);
+
 export default {
   port: config.port,
   fetch: app.fetch,

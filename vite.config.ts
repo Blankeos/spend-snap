@@ -16,9 +16,10 @@ const __dirname = dirname(__filename);
 const root = resolve(__dirname, ".");
 
 export default defineConfig({
+  build: {
+    minify: true,
+  },
   plugins: [
-    vike(),
-    vikeSolid(),
     devServer({
       entry: "./src/server/index.ts",
       exclude: [
@@ -32,6 +33,8 @@ export default defineConfig({
       ],
       injectClientScript: false,
     }),
+    vike(),
+    vikeSolid(),
     Icons({
       compiler: "solid",
     }),

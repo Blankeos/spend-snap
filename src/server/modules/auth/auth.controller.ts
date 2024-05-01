@@ -12,6 +12,10 @@ const users = [
     id: 2,
     name: "Carlo",
   },
+  {
+    id: 3,
+    name: Bun.env.NODE_ENV,
+  },
 ];
 
 export const authController = new Hono()
