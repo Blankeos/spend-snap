@@ -1,9 +1,12 @@
 import Counter from "@/components/Counter";
 import { useData } from "vike-solid/useData";
 import { Data } from "./+data";
+import { useStore } from "@nanostores/solid";
+import { $count } from "@/contexts/countStore";
 
 export default function Home() {
   const { randomValue } = useData<Data>();
+  const count = useStore($count);
 
   return (
     <main class="text-center mx-auto text-gray-700 p-4">
@@ -12,6 +15,14 @@ export default function Home() {
       </h1>
 
       <Counter />
+      <button
+        class="ml-2 btn btn-secondary"
+        onClick={() => {
+          $count.setKey("countClicked", count().countClicked + 1);
+        }}
+      >
+        NanoStore {count().countClicked}
+      </button>
 
       <p class="mt-8">
         Visit{" "}

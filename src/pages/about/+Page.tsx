@@ -1,12 +1,26 @@
 import Counter from "@/components/Counter";
+import { $count } from "@/contexts/countStore";
+import { useStore } from "@nanostores/solid";
 
 export default function About() {
+  const count = useStore($count);
+
   return (
     <main class="text-center mx-auto text-gray-700 p-4">
       <h1 class="max-6-xs text-6xl text-sky-700 font-thin uppercase my-16">
         About Page
       </h1>
+
       <Counter />
+      <button
+        class="ml-5 btn btn-secondary"
+        onClick={() => {
+          $count.setKey("countClicked", count().countClicked + 1);
+        }}
+      >
+        NanoStore {count().countClicked}
+      </button>
+
       <p class="mt-8">
         Visit{" "}
         <a
