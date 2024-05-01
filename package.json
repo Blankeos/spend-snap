@@ -14,10 +14,12 @@
   "dependencies": {
     "@felte/reporter-solid": "^1.2.10",
     "@felte/solid": "^1.2.13",
+    "@hono/typebox-validator": "^0.2.4",
     "@libsql/client": "^0.6.0",
     "@lucia-auth/adapter-drizzle": "^1.0.7",
     "@nanostores/solid": "^0.4.2",
     "@node-rs/argon2": "^1.8.3",
+    "@sinclair/typebox": "^0.32.27",
     "autoprefixer": "^10.4.19",
     "drizzle-orm": "^0.30.9",
     "hono": "^4.2.9",
