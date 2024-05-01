@@ -4,12 +4,11 @@
 import { config } from "@/config";
 import { Hono } from "hono";
 import { renderPage } from "vike/server";
+import { appRouter } from "./_app";
 
 const app = new Hono();
 
-app.get("/api/*", async (c, next) => {
-  return c.json({ message: "You are in the API." });
-});
+app.route("/api", appRouter);
 
 app.get("*", async (c, next) => {
   const pageContextInit = {
