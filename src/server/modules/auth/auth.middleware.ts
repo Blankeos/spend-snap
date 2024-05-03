@@ -1,11 +1,8 @@
-// src/middleware.ts
-import { Hono, MiddlewareHandler } from "hono";
 import { lucia } from "@/server/lucia";
 import { getCookie } from "hono/cookie";
-import { csrf } from "hono/csrf";
 import type { User, Session } from "lucia";
-
-import { createFactory, createMiddleware } from "hono/factory";
+import { createFactory } from "hono/factory";
+import { validateSession } from "@/server/utils/validateSession";
 
 const factory = createFactory<{
   Variables: {
@@ -14,36 +11,13 @@ const factory = createFactory<{
   };
 }>();
 
-const luciaAuthMiddleware = factory.createMiddleware(async (c, next) => {
-  const sessionId = getCookie(c, lucia.sessionCookieName) ?? null;
-  if (!sessionId) {
-    c.set("user", null);
-    c.set("session", null);
-    return next();
-  }
-  const { session, user } = await lucia.validateSession(sessionId);
-  if (session && session.fresh) {
-    // use `header()` instead of `setCookie()` to avoid TS errors
-    c.header("Set-Cookie", lucia.createSessionCookie(session.id).serialize(), {
-      append: true,
-    });
-  }
-  if (!session) {
-    c.header("Set-Cookie", lucia.createBlankSessionCookie().serialize(), {
-      append: true,
-    });
-  }
-  c.set("user", user);
-  c.set("session", session);
-  return next();
-});
-
 /**
  * Use this middleware to set the `user` and `session` properties on the request object.
  *
  * @example
+ * // For controller-level.
  * const myController = new Hono()
- *      .use(...authMiddlewares)
+ *      .use(authMiddleware)
  *      .get("/", async (c) => {
  *          const user = c.get("user");
  *          if (!user) {
@@ -51,11 +25,63 @@ const luciaAuthMiddleware = factory.createMiddleware(async (c, next) => {
  *          }
  *          // ...
  *      });
+ * 
+ * // For resolver-level.
+ * .get("/", authMiddleware, async (c) => {
+ *     const user = c.get("user");
+ *     ...
+ * })
+ })
  *
  * Modified from: https://lucia-auth.com/guides/validate-session-cookies/hono
  */
-export const authMiddlewares = [
-  // see https://hono.dev/middleware/builtin/csrf for more options
-  csrf(),
-  luciaAuthMiddleware,
-] as const;
+export const authMiddleware = factory.createMiddleware(async (c, next) => {
+  // 1. Check cookie.session.
+  const sessionId = getCookie(c, lucia.sessionCookieName) ?? null;
+
+  // 2. Validate session. (This is what I personally think Lucia's validateSession should be doing).
+  const { user, session, sessionCookie } = await validateSession(sessionId);
+
+  // use `header()` instead of setCookie to avoid TS errors
+  if (sessionCookie) {
+    c.header("Set-Cookie", sessionCookie.serialize(), {
+      append: true,
+    });
+  }
+
+  c.set("user", user);
+  c.set("session", session);
+
+  return next();
+});
+
+/**
+ * Use this middleware to require authentication on a route.
+ * Make susre to use authMiddleware along-side it.
+ * 
+ * @example
+ * // For controller-level.
+ * const myController = new Hono()
+ *      .use(authMiddleware)
+ *      .use(requireAuthMiddleware)
+ *      .get("/", async (c) => {
+ *          // Unauthorized users can't access this.
+ *      });
+ * 
+ * // For resolver-level.
+ * .get("/", authMiddleware, requireAuthMiddleware, async (c) => {
+ *     // Unauthorized users can't access this.
+ * })
+ })
+ */
+export const requireAuthMiddleware = factory.createMiddleware(
+  async (c, next) => {
+    const session = c.get("session");
+
+    if (!session) {
+      throw new Error("Unauthenticated.");
+    }
+
+    return next();
+  }
+);

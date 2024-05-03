@@ -2,6 +2,7 @@ import { db } from "@/server/db";
 import { eq } from "drizzle-orm";
 import { userTable } from "../schema/auth";
 import { generateIdFromEntropySize } from "lucia";
+
 export const authDAO = {
   user: {
     findByUsername: async (username: string) => {

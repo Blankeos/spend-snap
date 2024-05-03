@@ -8,12 +8,15 @@ import { appRouter } from "./_app";
 
 const app = new Hono();
 
+// For the Backend APIs
 app.route("/api", appRouter);
 
+// For the Frontend + SSR
 app.get("*", async (c, next) => {
   const pageContextInit = {
     urlOriginal: c.req.url,
-    headers: c.req.header(),
+    request: c.req,
+    response: c.res,
   };
   const pageContext = await renderPage(pageContextInit);
   const { httpResponse } = pageContext;

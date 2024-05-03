@@ -1,8 +1,13 @@
+import { HonoRequest } from "hono";
+import { Response } from "hono/dist/types/client/types";
+
+// Extend the PageContext in Vike.
 declare global {
   // For Vike types
   namespace Vike {
     interface PageContext {
-      headers: Record<string, string>;
+      request: HonoRequest<"*", unknown>;
+      response: Response;
     }
   }
 }

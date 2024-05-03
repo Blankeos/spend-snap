@@ -1,7 +1,5 @@
-import { resolve, dirname } from "node:path";
-import { fileURLToPath } from "node:url";
+// Icons
 import Icons from "unplugin-icons/vite";
-import { defineConfig } from "vite";
 
 // Vike
 import vike from "vike/plugin";
@@ -11,6 +9,9 @@ import vikeSolid from "vike-solid/vite";
 import devServer from "@hono/vite-dev-server";
 
 // Vite
+import { resolve, dirname } from "node:path";
+import { defineConfig } from "vite";
+import { fileURLToPath } from "node:url";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 const root = resolve(__dirname, ".");

@@ -39,7 +39,7 @@ export default function Nav() {
         <li class={`border-b-2 ${active("/register")} mx-1.5 sm:mx-6`}>
           <a href="/register">Register</a>
         </li>
-        <li class={`border-b-2 ${active("/register")} mx-1.5 sm:mx-6`}>
+        <li class={`border-b-2 ${active("/dashboard")} mx-1.5 sm:mx-6`}>
           <a href="/dashboard">Dashboard</a>
         </li>
         <button

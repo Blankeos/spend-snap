@@ -1,7 +1,9 @@
+import { setUser } from "@/contexts/authStore";
 import { hc } from "@/lib/honoClient";
 import { createForm } from "@felte/solid";
 import { validator } from "@felte/validator-superstruct";
 import { object, string, size } from "superstruct";
+import { navigate } from "vike/client/router";
 
 const struct = object({
   username: string(),
@@ -23,7 +25,9 @@ export default function Register() {
 
       const result = await response.json();
 
+      setUser(result);
       alert(`${result.user.id} has logged in!`);
+      navigate("/dashboard");
     },
   });
 

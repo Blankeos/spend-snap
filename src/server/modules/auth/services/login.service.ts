@@ -1,6 +1,6 @@
 import { authDAO } from "@/server/dao/auth.dao";
 import { lucia } from "@/server/lucia";
-import { hash, verify } from "@node-rs/argon2";
+import { verify } from "@node-rs/argon2";
 import { HTTPException } from "hono/http-exception";
 
 type LoginParams = {

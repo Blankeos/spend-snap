@@ -1,23 +1,20 @@
-import { useData } from "vike-solid/useData";
-import { Data } from "./+data";
-import { createResource } from "solid-js";
-import { hc } from "@/lib/honoClient";
+import { useStore } from "@nanostores/solid";
+import { $user, initializeUser } from "@/contexts/authStore";
+import { createEffect, onMount, Show } from "solid-js";
+import { navigate } from "vike/client/router";
+import { useProtectedRoute } from "@/hooks/useProtectedRoute";
 
 export default function DashboardPage() {
-  const { user } = useData<Data>();
+  useProtectedRoute({ redirectTo: "/" });
 
-  const [data, { mutate, refetch }] = createResource(async () => {
-    const response = await hc.auth.$get();
-    const result = await response.json();
-
-    return result;
-  });
+  const authStore = useStore($user);
 
   return (
-    <div>
-      {JSON.stringify(data())}1231
-      <h1 class="text-3xl">Dashboard</h1>
-      {JSON.stringify(user)}
-    </div>
+    <Show when={authStore().user} fallback="Not authenticated.">
+      <div>
+        <h1 class="text-3xl">Dashboard {authStore().loading}</h1>
+        User: {JSON.stringify(authStore().user)}
+      </div>
+    </Show>
   );
 }

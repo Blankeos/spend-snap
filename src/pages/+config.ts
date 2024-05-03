@@ -5,6 +5,6 @@ import vikeSolid from "vike-solid/config";
 // Default config (can be overridden by pages)
 export default {
   // <title>
-  title: "My Vike Solid App",
+  title: "",
   extends: vikeSolid,
 } satisfies Config;
