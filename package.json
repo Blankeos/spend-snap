@@ -30,8 +30,7 @@
     "nprogress": "^0.2.0",
     "postcss": "^8.4.38",
     "solid-js": "^1.8.16",
-    "superstruct": "^1.0.4",
-    "tailwindcss": "^3.4.3"
+    "superstruct": "^1.0.4"
   },
   "devDependencies": {
     "@hono/vite-dev-server": "^0.12.0",
@@ -46,6 +45,6 @@
     "vike": "^0.4.171",
     "vike-solid": "^0.4.5",
     "vite": "^5.2.10",
-    "vite-node": "^1.5.3"
+    "tailwindcss": "^3.4.3"
   }
 }
