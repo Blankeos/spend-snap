@@ -10,7 +10,8 @@
     "dz:generate": "bun drizzle-kit generate:sqlite",
     "dz:create": "bun drizzle-kit generate:sqlite --custom",
     "dz:studio": "bun drizzle-kit studio",
-    "dz:check": "bun drizzle-kit check:sqlite"
+    "dz:check": "bun drizzle-kit check:sqlite",
+    "dz:drop": "bun drizzle-kit drop"
   },
   "dependencies": {
     "@felte/reporter-solid": "^1.2.10",
