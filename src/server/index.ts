@@ -31,6 +31,12 @@ app.get("*", async (c, next) => {
   }
 });
 
+app.onError((_, c) => {
+  console.log(c.error);
+
+  return c.text("", 500);
+});
+
 console.log("Running at http://localhost:" + config.port);
 
 export default {

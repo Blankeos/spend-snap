@@ -29,3 +29,4 @@ gitignore
 Thumbs.db
 
 local.db
+local-backup.db

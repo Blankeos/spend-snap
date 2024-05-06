@@ -6,12 +6,14 @@
     "dev": "bunx --bun vite --host",
     "build": "tsc && vite build",
     "preview": "vite preview",
+    "dz:seed": "bun run scripts/seed.ts",
     "dz:up": "bun run scripts/migrate.ts",
     "dz:generate": "bun drizzle-kit generate:sqlite",
     "dz:create": "bun drizzle-kit generate:sqlite --custom",
     "dz:studio": "bun drizzle-kit studio",
     "dz:check": "bun drizzle-kit check:sqlite",
-    "dz:drop": "bun drizzle-kit drop"
+    "dz:drop": "bun drizzle-kit drop",
+    "dz:push": "drizzle-kit push:sqlite"
   },
   "dependencies": {
     "@felte/reporter-solid": "^1.2.10",
