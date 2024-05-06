@@ -27,5 +27,10 @@ CREATE TABLE `receipt` (
 	FOREIGN KEY (`collation_id`) REFERENCES `collation`(`id`) ON UPDATE no action ON DELETE no action
 );
 --> statement-breakpoint
-ALTER TABLE user ADD `created_timestamp` text DEFAULT (CURRENT_TIMESTAMP);--> statement-breakpoint
-ALTER TABLE user ADD `updated_timestamp` text DEFAULT (CURRENT_TIMESTAMP);
+ALTER TABLE user ADD `created_timestamp` text;
+--> statement-breakpoint
+ALTER TABLE user ADD `updated_timestamp` text;
+--> statement-breakpoint
+UPDATE user SET created_timestamp = CURRENT_TIMESTAMP;
+--> statement-breakpoint
+UPDATE user SET updated_timestamp = CURRENT_TIMESTAMP;
