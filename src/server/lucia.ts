@@ -7,7 +7,7 @@ import { config } from "@/config";
 const adapter = new DrizzleSQLiteAdapter(db, sessionTable, userTable);
 
 export const lucia = new Lucia(adapter, {
-  sessionExpiresIn: new TimeSpan(5, "s"),
+  // sessionExpiresIn: new TimeSpan(5, "s"),
   sessionCookie: {
     attributes: {
       // set to `true` when using HTTPS
