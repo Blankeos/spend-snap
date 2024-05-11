@@ -5,10 +5,11 @@ import { useStore } from "@nanostores/solid";
 import { createMemo, createSignal, onMount, Show } from "solid-js";
 import { createQuery } from "@tanstack/solid-query";
 import { usePageContext } from "vike-solid/usePageContext";
-import Chart from "chart.js/auto";
 import createTween from "@solid-primitives/tween";
 import { format } from "numerable";
 import { formatDate } from "@/lib/formatDate";
+import Table from "@/components/Table";
+import { formatCurrency } from "@/lib/formatCurrency";
 
 export default function CollationDetailsPage() {
   useProtectedRoute({ redirectTo: "/" });
@@ -62,15 +63,23 @@ export default function CollationDetailsPage() {
         <div class="h-5" />
 
         <header class="flex flex-col gap-y-2">
-          <h1 class="text-2xl">{collationDetailsQuery?.data?.name}</h1>
+          <h1 class="text-2xl">
+            <b class="font-bold">Collation:</b>{" "}
+            {collationDetailsQuery?.data?.name}
+          </h1>
           {/* {JSON.stringify(collationDetailsQuery.data)} */}
-          <p class="text-gray-600">{collationDetailsQuery.data?.description}</p>
+          <p class="text-gray-600">
+            <b class="font-medium">Description:</b>{" "}
+            {collationDetailsQuery.data?.description}
+          </p>
           <span class="badge badge-ghost text-xs">
             Created:{" "}
             {collationDetailsQuery.data?.createdTimestamp &&
               formatDate(collationDetailsQuery.data?.createdTimestamp)}
           </span>
         </header>
+
+        <div class="h-5" />
 
         <div class="flex flex-col items-center justify-center gap-y-3">
           <div
@@ -87,13 +96,14 @@ export default function CollationDetailsPage() {
           </div>
 
           <p>
-            Spent: PHP {format(amountSpent(), "0,0.00")} / PHP{" "}
-            {format(totalBudget(), "0,0.00")}
+            Spent: {formatCurrency(amountSpent())} /{" "}
+            {formatCurrency(totalBudget())}
           </p>
         </div>
 
         <div class="h-5" />
-        <div class="flex gap-x-2">
+
+        <div class="flex gap-x-2 justify-center">
           <button
             class="btn"
             onClick={() => setAmountSpent(totalBudget() * 0.25)}
@@ -113,6 +123,49 @@ export default function CollationDetailsPage() {
             95%
           </button>
         </div>
+
+        <div class="h-5" />
+
+        <h2 class="text-lg font-bold">Receipts</h2>
+
+        <Table
+          columns={[
+            {
+              header: "Date Logged",
+              cell(props) {
+                return formatDate(props.row.original.date);
+              },
+            },
+            {
+              header: "Total Spent",
+              cell(props) {
+                return formatCurrency(props.row.original.amount);
+              },
+            },
+            {
+              header: "Image",
+              cell(props) {
+                return (
+                  <button class="btn btn-ghost btn-xs border border-gray-200 truncate">
+                    View Image
+                  </button>
+                );
+              },
+            },
+          ]}
+          data={[
+            {
+              amount: 100,
+              date: "2024-01-01",
+              imageUrl: "https://myimage.com/123.png",
+            },
+            {
+              amount: 300,
+              date: "2022-01-01",
+              imageUrl: "https://myimage.com/123.png",
+            },
+          ]}
+        />
       </div>
     </Show>
   );
