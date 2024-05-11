@@ -45,17 +45,18 @@
   },
   "devDependencies": {
     "@hono/vite-dev-server": "^0.12.1",
+    "@iconify-json/mdi": "^1.1.66",
     "@types/bun": "^1.1.1",
     "@types/nprogress": "^0.2.3",
     "daisyui": "^4.10.2",
     "dotenv": "^16.4.5",
     "drizzle-kit": "^0.20.17",
     "nodemon": "^3.1.0",
+    "tailwindcss": "^3.4.3",
     "typescript": "^5.4.5",
     "unplugin-icons": "^0.18.5",
     "vike": "^0.4.171",
     "vike-solid": "^0.4.5",
-    "vite": "^5.2.11",
-    "tailwindcss": "^3.4.3"
+    "vite": "^5.2.11"
   }
 }

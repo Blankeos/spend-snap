@@ -1,15 +1,15 @@
+import Table from "@/components/Table";
 import { $user } from "@/contexts/authStore";
 import { useProtectedRoute } from "@/hooks/useProtectedRoute";
+import { formatCurrency } from "@/lib/formatCurrency";
+import { formatDate } from "@/lib/formatDate";
 import { hc } from "@/lib/honoClient";
 import { useStore } from "@nanostores/solid";
-import { createMemo, createSignal, onMount, Show } from "solid-js";
-import { createQuery } from "@tanstack/solid-query";
-import { usePageContext } from "vike-solid/usePageContext";
 import createTween from "@solid-primitives/tween";
-import { format } from "numerable";
-import { formatDate } from "@/lib/formatDate";
-import Table from "@/components/Table";
-import { formatCurrency } from "@/lib/formatCurrency";
+import { createQuery } from "@tanstack/solid-query";
+import { createMemo, createSignal, onMount, Show } from "solid-js";
+import { usePageContext } from "vike-solid/usePageContext";
+import IconImage from "~icons/mdi/tooltip-image";
 
 export default function CollationDetailsPage() {
   useProtectedRoute({ redirectTo: "/" });
@@ -147,7 +147,7 @@ export default function CollationDetailsPage() {
               cell(props) {
                 return (
                   <button class="btn btn-ghost btn-xs border border-gray-200 truncate">
-                    View Image
+                    <IconImage class="text-gray-600" /> View Image
                   </button>
                 );
               },
