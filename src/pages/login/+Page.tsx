@@ -38,11 +38,11 @@ export default function Login() {
 
   return (
     <main class="text-center mx-auto text-gray-700 p-4">
-      <h1 class="">Login</h1>
+      <h1 class="mb-5 text-2xl font-medium">Login</h1>
 
-      {JSON.stringify(data())}
+      {/* {JSON.stringify(data())} */}
 
-      <form class="form-control" use:form={form}>
+      <form class="form-control gap-y-3" use:form={form}>
         <input
           type="text"
           name="username"

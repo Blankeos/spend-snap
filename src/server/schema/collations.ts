@@ -1,19 +1,23 @@
-import { sqliteTable, text, numeric } from "drizzle-orm/sqlite-core";
+import { sqliteTable, text, real } from "drizzle-orm/sqlite-core";
 import { userTable } from "./auth";
 import { sql } from "drizzle-orm";
+import { createId } from "@paralleldrive/cuid2";
 
 /** 1 collation is a group of receipts. This could be for a trip. */
 export const collationTable = sqliteTable("collation", {
-  id: text("id").notNull().primaryKey(),
+  id: text("id")
+    .notNull()
+    .primaryKey()
+    .$defaultFn(() => createId()),
   name: text("name").notNull(),
   description: text("description").notNull().default(""),
-  totalBudget: numeric("total_budget").notNull(),
+  totalBudget: real("total_budget").notNull(),
 
   createdTimestamp: text("created_timestamp").default(sql`(CURRENT_TIMESTAMP)`),
   updatedTimestamp: text("updated_timestamp").default(sql`(CURRENT_TIMESTAMP)`),
 
   // References:
-  createdBy: text("id")
+  createdById: text("created_by_id")
     .notNull()
     .references(() => userTable.id),
 });
@@ -28,8 +32,11 @@ type SegmentedAmountsColumn = Array<{
 
 /** Receipts belong to collations. */
 export const receiptTable = sqliteTable("receipt", {
-  id: text("id").notNull().primaryKey(),
-  totalAmount: numeric("total_amount").notNull(),
+  id: text("id")
+    .notNull()
+    .primaryKey()
+    .$defaultFn(() => createId()),
+  totalAmount: real("total_amount").notNull(),
 
   /** When you want to segment the total amount by person. You can use this. */
   segmentedAmounts: text("segmented_amounts", {
@@ -54,7 +61,10 @@ export const receiptTable = sqliteTable("receipt", {
 export const receiptSegmentedAmountsSpenderTable = sqliteTable(
   "receipts_segmented_amounts_spender",
   {
-    id: text("id").notNull().primaryKey(),
+    id: text("id")
+      .notNull()
+      .primaryKey()
+      .$defaultFn(() => createId()),
     name: text("name").notNull(),
     imageURL: text("imageURL"),
 

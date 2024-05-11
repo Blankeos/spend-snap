@@ -25,7 +25,7 @@ export default function Register() {
 
       const result = await response.json();
 
-      setUser(result);
+      setUser(result.user);
       alert(`${result.user.id} has logged in!`);
       navigate("/dashboard");
     },
@@ -33,11 +33,11 @@ export default function Register() {
 
   return (
     <main class="text-center mx-auto text-gray-700 p-4">
-      <h1 class="">Register</h1>
+      <h1 class="mb-5 text-2xl font-medium">Register</h1>
 
-      {JSON.stringify(data())}
+      {/* {JSON.stringify(data())} */}
 
-      <form class="form-control" use:form={form}>
+      <form class="form-control gap-y-3" use:form={form}>
         <input
           type="text"
           name="username"

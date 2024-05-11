@@ -7,6 +7,7 @@ import { Type as T } from "@sinclair/typebox";
 import { authMiddleware } from "./auth.middleware";
 import { lucia } from "@/server/lucia";
 import { login } from "./services/login.service";
+import { HTTPException } from "hono/http-exception";
 
 export const authController = new Hono()
   .basePath("/auth")
@@ -56,7 +57,8 @@ export const authController = new Hono()
       })
     ),
     async (c) => {
-      // if (c) throw new Error("Already logged in");
+      if (c.get("session"))
+        throw new HTTPException(401, { message: "Already logged in." });
 
       const validJSON = c.req.valid("json");
 

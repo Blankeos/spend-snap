@@ -13,7 +13,7 @@ export const collationsDAO = {
       const result = await db
         .select()
         .from(collationTable)
-        .where(eq(collationTable.createdBy, userId))
+        .where(eq(collationTable.createdById, userId))
         .execute();
 
       return result;
@@ -41,6 +41,13 @@ export const collationsDAO = {
         .execute();
 
       return collation?.[0] ?? null;
+    },
+
+    deleteCollationById: async (collationId: string) => {
+      const result = await db
+        .delete(collationTable)
+        .where(eq(collationTable.id, collationId))
+        .execute();
     },
   },
 

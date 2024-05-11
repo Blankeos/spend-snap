@@ -2,16 +2,21 @@ import { $user } from "@/contexts/authStore";
 import { useProtectedRoute } from "@/hooks/useProtectedRoute";
 import { hc } from "@/lib/honoClient";
 import { useStore } from "@nanostores/solid";
-import { onMount, Show } from "solid-js";
+import { createMemo, createSignal, onMount, Show } from "solid-js";
 import { createQuery } from "@tanstack/solid-query";
 import { usePageContext } from "vike-solid/usePageContext";
 import Chart from "chart.js/auto";
+import createTween from "@solid-primitives/tween";
+import { format } from "numerable";
+import { formatDate } from "@/lib/formatDate";
 
-export default function DashboardPage() {
+export default function CollationDetailsPage() {
   useProtectedRoute({ redirectTo: "/" });
   const authStore = useStore($user);
 
   const { routeParams } = usePageContext();
+
+  const [amountSpent, setAmountSpent] = createSignal(0);
 
   // ===========================================================================
   // Queries
@@ -34,52 +39,80 @@ export default function DashboardPage() {
   }));
 
   // ===========================================================================
-  // Effects
+  // Derived States
   // ===========================================================================
-  let canvas: HTMLCanvasElement | undefined;
 
-  onMount(() => {
-    const ctx = canvas?.getContext("2d")!;
-    if (!ctx) return;
+  const totalBudget = createMemo(
+    () => collationDetailsQuery?.data?.totalBudget ?? 0
+  );
 
-    const myChart = new Chart(ctx, {
-      type: "doughnut",
-      data: {
-        labels: ["Red", "Blue", "Yellow", "Green", "Purple", "Orange"],
-        datasets: [
-          {
-            label: "# of Votes",
-            data: [12, 19, 3, 5, 2, 3],
-            backgroundColor: [
-              "rgba(255, 99, 132, 0.2)",
-              "rgba(54, 162, 235, 0.2)",
-              "rgba(255, 206, 86, 0.2)",
-              "rgba(75, 192, 192, 0.2)",
-              "rgba(153, 102, 255, 0.2)",
-              "rgba(255, 159, 64, 0.2)",
-            ],
-            borderColor: [
-              "rgba(255, 99, 132, 1)",
-              "rgba(54, 162, 235, 1)",
-              "rgba(255, 206, 86, 1)",
-              "rgba(75, 192, 192, 1)",
-              "rgba(153, 102, 255, 1)",
-              "rgba(255, 159, 64, 1)",
-            ],
-            borderWidth: 1,
-          },
-        ],
-      },
-    });
+  const spentPercentage = createMemo(() => {
+    if (!collationDetailsQuery?.data?.totalBudget || !amountSpent()) return 0;
+
+    return (amountSpent() / collationDetailsQuery?.data?.totalBudget) * 100;
+  });
+
+  const tweenedSpentPercentage = createTween(spentPercentage, {
+    duration: 500,
   });
 
   return (
     <Show when={authStore().user} fallback="Not authenticated.">
       <div class="max-w-5xl mx-auto px-8">
-        <h1 class="text-2xl">{collationDetailsQuery?.data?.name}</h1>
-        {JSON.stringify(collationDetailsQuery.data)}
+        <div class="h-5" />
 
-        <canvas ref={canvas} class="w-20 h-20" />
+        <header class="flex flex-col gap-y-2">
+          <h1 class="text-2xl">{collationDetailsQuery?.data?.name}</h1>
+          {/* {JSON.stringify(collationDetailsQuery.data)} */}
+          <p class="text-gray-600">{collationDetailsQuery.data?.description}</p>
+          <span class="badge badge-ghost text-xs">
+            Created:{" "}
+            {collationDetailsQuery.data?.createdTimestamp &&
+              formatDate(collationDetailsQuery.data?.createdTimestamp)}
+          </span>
+        </header>
+
+        <div class="flex flex-col items-center justify-center gap-y-3">
+          <div
+            class="w-52 h-52 rounded-full grid place-items-center"
+            style={{
+              background: `conic-gradient(lightgreen ${tweenedSpentPercentage()}%, rgb(229, 231, 235) 0%)`,
+            }}
+          >
+            <div class="w-40 h-40 bg-white rounded-full shadow-lg border grid place-items-center">
+              <span class="text-2xl">
+                {tweenedSpentPercentage().toFixed(2)}%
+              </span>
+            </div>
+          </div>
+
+          <p>
+            Spent: PHP {format(amountSpent(), "0,0.00")} / PHP{" "}
+            {format(totalBudget(), "0,0.00")}
+          </p>
+        </div>
+
+        <div class="h-5" />
+        <div class="flex gap-x-2">
+          <button
+            class="btn"
+            onClick={() => setAmountSpent(totalBudget() * 0.25)}
+          >
+            25%
+          </button>
+          <button
+            class="btn"
+            onClick={() => setAmountSpent(totalBudget() * 0.5)}
+          >
+            50%
+          </button>
+          <button
+            class="btn"
+            onClick={() => setAmountSpent(totalBudget() * 0.95)}
+          >
+            95%
+          </button>
+        </div>
       </div>
     </Show>
   );

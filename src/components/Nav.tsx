@@ -1,10 +1,14 @@
+import { $user } from "@/contexts/authStore";
 import { hc } from "@/lib/honoClient";
-import { createResource } from "solid-js";
+import { useStore } from "@nanostores/solid";
+import { Show } from "solid-js";
 import { usePageContext } from "vike-solid/usePageContext";
 import { navigate } from "vike/client/router";
 
 export default function Nav() {
   const pageContext = usePageContext();
+
+  const authStore = useStore($user);
 
   async function logout() {
     const response = await hc.auth.logout.$get();
@@ -12,6 +16,7 @@ export default function Nav() {
 
     if (result.success) {
       alert("Logged out!");
+      $user.set({ user: null, loading: false });
       navigate("/");
     } else {
       alert("Failed to logout?");
@@ -33,21 +38,25 @@ export default function Nav() {
         <li class={`border-b-2 ${active("/about")} mx-1.5 sm:mx-6`}>
           <a href="/about">About</a>
         </li>
-        <li class={`border-b-2 ${active("/login")} mx-1.5 sm:mx-6`}>
-          <a href="/login">Login</a>
-        </li>
-        <li class={`border-b-2 ${active("/register")} mx-1.5 sm:mx-6`}>
-          <a href="/register">Register</a>
-        </li>
-        <li class={`border-b-2 ${active("/dashboard")} mx-1.5 sm:mx-6`}>
-          <a href="/dashboard">Dashboard</a>
-        </li>
-        <button
-          class={`border-b-2 mx-1.5 sm:mx-6 border-transparent hover:border-sky-600`}
-          onClick={logout}
-        >
-          Logout
-        </button>
+        <Show when={!authStore().user}>
+          <li class={`border-b-2 ${active("/login")} mx-1.5 sm:mx-6`}>
+            <a href="/login">Login</a>
+          </li>
+          <li class={`border-b-2 ${active("/register")} mx-1.5 sm:mx-6`}>
+            <a href="/register">Register</a>
+          </li>
+        </Show>
+        <Show when={authStore().user}>
+          <li class={`border-b-2 ${active("/dashboard")} mx-1.5 sm:mx-6`}>
+            <a href="/dashboard">Dashboard</a>
+          </li>
+          <button
+            class={`border-b-2 mx-1.5 sm:mx-6 border-transparent hover:border-sky-600`}
+            onClick={logout}
+          >
+            Logout
+          </button>
+        </Show>
       </ul>
     </nav>
   );

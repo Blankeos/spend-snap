@@ -1,11 +1,12 @@
 CREATE TABLE `collation` (
-	`id` text NOT NULL,
+	`id` text PRIMARY KEY NOT NULL,
 	`name` text NOT NULL,
 	`description` text DEFAULT '' NOT NULL,
-	`total_budget` numeric NOT NULL,
+	`total_budget` real NOT NULL,
 	`created_timestamp` text DEFAULT (CURRENT_TIMESTAMP),
 	`updated_timestamp` text DEFAULT (CURRENT_TIMESTAMP),
-	FOREIGN KEY (`id`) REFERENCES `user`(`id`) ON UPDATE no action ON DELETE no action
+	`created_by_id` text NOT NULL,
+	FOREIGN KEY (`created_by_id`) REFERENCES `user`(`id`) ON UPDATE no action ON DELETE no action
 );
 --> statement-breakpoint
 CREATE TABLE `receipts_segmented_amounts_spender` (
@@ -18,7 +19,7 @@ CREATE TABLE `receipts_segmented_amounts_spender` (
 --> statement-breakpoint
 CREATE TABLE `receipt` (
 	`id` text PRIMARY KEY NOT NULL,
-	`total_amount` numeric NOT NULL,
+	`total_amount` real NOT NULL,
 	`segmented_amounts` text,
 	`image_objkey` text DEFAULT '' NOT NULL,
 	`created_timestamp` text DEFAULT (CURRENT_TIMESTAMP),
@@ -27,10 +28,5 @@ CREATE TABLE `receipt` (
 	FOREIGN KEY (`collation_id`) REFERENCES `collation`(`id`) ON UPDATE no action ON DELETE no action
 );
 --> statement-breakpoint
-ALTER TABLE user ADD `created_timestamp` text;
---> statement-breakpoint
-ALTER TABLE user ADD `updated_timestamp` text;
---> statement-breakpoint
-UPDATE user SET created_timestamp = CURRENT_TIMESTAMP;
---> statement-breakpoint
-UPDATE user SET updated_timestamp = CURRENT_TIMESTAMP;
+ALTER TABLE user ADD `created_timestamp` text DEFAULT (CURRENT_TIMESTAMP);--> statement-breakpoint
+ALTER TABLE user ADD `updated_timestamp` text DEFAULT (CURRENT_TIMESTAMP);
