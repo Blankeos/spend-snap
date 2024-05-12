@@ -6,6 +6,7 @@
     "dev": "bunx --bun vite --host",
     "build": "tsc && vite build",
     "preview": "vite preview",
+    "s3:create": "docker-compose up",
     "dz:seed": "bun run scripts/seed.ts",
     "dz:up": "bun run scripts/migrate.ts",
     "dz:generate": "bun drizzle-kit generate:sqlite",
@@ -42,6 +43,7 @@
     "numerable": "^0.3.15",
     "postcss": "^8.4.38",
     "solid-js": "^1.8.17",
+    "solid-sonner": "^0.2.6",
     "superstruct": "^1.0.4",
     "tailwind-merge": "^2.3.0"
   },

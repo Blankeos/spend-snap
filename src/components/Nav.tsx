@@ -2,6 +2,7 @@ import { $user } from "@/contexts/authStore";
 import { hc } from "@/lib/honoClient";
 import { useStore } from "@nanostores/solid";
 import { Show } from "solid-js";
+import { toast } from "solid-sonner";
 import { usePageContext } from "vike-solid/usePageContext";
 import { navigate } from "vike/client/router";
 
@@ -15,11 +16,12 @@ export default function Nav() {
     const result = await response.json();
 
     if (result.success) {
-      alert("Logged out!");
+      const user = authStore().user; // cache before logging out so we can display toast.
       $user.set({ user: null, loading: false });
+      toast.success(`${user?.username} has logged out!`);
       navigate("/");
     } else {
-      alert("Failed to logout?");
+      toast.error(`Failed to log out!`);
       navigate("/login");
     }
   }

@@ -1,7 +1,9 @@
+import Button from "@/components/Button";
 import { setUser } from "@/contexts/authStore";
 import { hc } from "@/lib/honoClient";
 import { createForm } from "@felte/solid";
 import { validator } from "@felte/validator-superstruct";
+import { toast } from "solid-sonner";
 import { object, string, size } from "superstruct";
 import { navigate } from "vike/client/router";
 
@@ -11,7 +13,7 @@ const struct = object({
 });
 
 export default function Login() {
-  const { form, data } = createForm({
+  const { form, isSubmitting } = createForm({
     extend: validator({ struct, level: "error" }),
     onSubmit: async (values: typeof struct.TYPE, context) => {
       try {
@@ -27,11 +29,11 @@ export default function Login() {
         const result = await response.json();
 
         setUser(result.user);
-        alert(`${result.user.id} has logged in!`);
+        toast.success(`${result.user.username} has logged in!`);
         navigate("/dashboard");
       } catch (e) {
         console.log("found an error here...");
-        alert(e);
+        toast.error(`Failed to login!`);
       }
     },
   });
@@ -39,8 +41,6 @@ export default function Login() {
   return (
     <main class="text-center mx-auto text-gray-700 p-4">
       <h1 class="mb-5 text-2xl font-medium">Login</h1>
-
-      {/* {JSON.stringify(data())} */}
 
       <form class="form-control gap-y-3" use:form={form}>
         <input
@@ -55,9 +55,13 @@ export default function Login() {
           class="input input-bordered"
           placeholder="Password"
         />
-        <button type="submit" class="btn btn-primary">
+        <Button
+          type="submit"
+          class="btn btn-primary"
+          isLoading={isSubmitting()}
+        >
           Sign In
-        </button>
+        </Button>
       </form>
     </main>
   );
