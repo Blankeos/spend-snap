@@ -179,7 +179,21 @@ export default function AddNewReceiptModal(
                     {(_, index) => (
                       <div class="flex gap-x-1 w-full">
                         <div class="w-full flex gap-x-2 items-center">
-                          <div class="rounded-full bg-gray-100 w-8 h-8 flex-shrink-0" />
+                          <div
+                            class="rounded-full bg-gray-100 w-8 h-8 flex-shrink-0"
+                            style={{
+                              "background-image": `url(${
+                                spendersQuery?.data?.spenders?.find(
+                                  (spender) =>
+                                    spender.id ===
+                                    data().segmentedAmounts?.at(index)
+                                      ?.spenderId
+                                )?.imageURL
+                              })`,
+                              "background-size": "cover",
+                              "background-position": "center",
+                            }}
+                          />
                           <select
                             name={`segmentedAmounts.${index}.spenderId`}
                             class="select select-sm select-primary w-full max-w-xs"

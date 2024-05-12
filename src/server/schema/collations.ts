@@ -43,7 +43,7 @@ export const receiptTable = sqliteTable("receipt", {
     mode: "json",
   }).$type<SegmentedAmountsColumn>(),
 
-  imageObjKey: text("image_objkey").notNull().default(""),
+  imageObjKey: text("image_objkey").notNull(),
 
   createdTimestamp: text("created_timestamp").default(sql`(CURRENT_TIMESTAMP)`),
   updatedTimestamp: text("updated_timestamp").default(sql`(CURRENT_TIMESTAMP)`),
