@@ -32,6 +32,7 @@
     "@tanstack/solid-table": "^8.16.1",
     "autoprefixer": "^10.4.19",
     "chart.js": "^4.4.2",
+    "clsx": "^2.1.1",
     "dayjs": "^1.11.11",
     "drizzle-orm": "^0.30.9",
     "hono": "^4.3.4",
@@ -41,10 +42,12 @@
     "numerable": "^0.3.15",
     "postcss": "^8.4.38",
     "solid-js": "^1.8.17",
-    "superstruct": "^1.0.4"
+    "superstruct": "^1.0.4",
+    "tailwind-merge": "^2.3.0"
   },
   "devDependencies": {
     "@hono/vite-dev-server": "^0.12.1",
+    "@iconify-json/line-md": "^1.1.37",
     "@iconify-json/mdi": "^1.1.66",
     "@types/bun": "^1.1.1",
     "@types/nprogress": "^0.2.3",
