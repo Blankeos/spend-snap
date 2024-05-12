@@ -4,8 +4,9 @@ import {
   receiptSegmentedAmountsSpenderTable,
   receiptTable,
 } from "../schema/collations";
-import { arrayOverlaps, eq, sql } from "drizzle-orm";
+import { eq, sql } from "drizzle-orm";
 import { HTTPException } from "hono/http-exception";
+import { alias } from "drizzle-orm/sqlite-core";
 
 export const collationsDAO = {
   collation: {
@@ -19,14 +20,30 @@ export const collationsDAO = {
       return result;
     },
 
+    /** Gets collation by Id only. (No relations). */
+    getCollationById: async (collationId: string) => {
+      const collation = await db
+        .select()
+        .from(collationTable)
+        .where(eq(collationTable.id, collationId))
+        .execute();
+
+      return collation?.[0] ?? null;
+    },
+
     /** Gets a collation joined with its relations. */
     getCollationDetailsById: async (collationId: string) => {
+      const receipts = alias(receiptTable, "receipts");
+
       const collation = await db
         .select()
         .from(collationTable)
         .where(eq(collationTable.id, collationId))
         // TODO: add joins here.
+        // .leftJoin(receiptTable, eq(collationTable.id, receiptTable.collationId))
         .execute();
+
+      console.log(collation);
 
       return collation?.[0] ?? null;
     },
@@ -55,11 +72,11 @@ export const collationsDAO = {
     getReceiptsByCollationId: async (collationId: string) => {
       const receipts = await db
         .select()
-        .from(collationTable)
-        .where(eq(collationTable.id, collationId))
+        .from(receiptTable)
+        .where(eq(receiptTable.collationId, collationId))
         .execute();
 
-      return receipts?.[0] ?? null;
+      return receipts;
     },
 
     createNewSegmentedAmountsSpender: async (
@@ -122,6 +139,7 @@ export const collationsDAO = {
             collationId: params.collationId,
             totalAmount: params.totalAmount,
             segmentedAmounts: segmentedAmounts,
+            imageObjKey: params.imageObjKey,
           })
           .returning()
           .execute();
@@ -130,6 +148,16 @@ export const collationsDAO = {
       });
 
       return receipt;
+    },
+
+    getReceiptSpendersByCollationId: async (collationId: string) => {
+      const spenders = await db
+        .select()
+        .from(receiptSegmentedAmountsSpenderTable)
+        .where(eq(receiptSegmentedAmountsSpenderTable.collationId, collationId))
+        .execute();
+
+      return spenders;
     },
   },
 };
