@@ -3,7 +3,7 @@ import { createForm } from "@felte/solid";
 import { validator } from "@felte/validator-superstruct";
 import { VoidProps } from "solid-js";
 import { object, optional, string } from "superstruct";
-import Modal from "./Modal";
+import Modal, { createModalOpeners } from "./Modal";
 import Button from "../Button";
 
 type AddNewReceiptSpenderModalProps = {
@@ -81,12 +81,7 @@ export default function AddNewReceiptSpenderModal(
   );
 }
 
-export function openAddNewReceiptSpenderModal() {
-  // @ts-ignore
-  document.getElementById("new-spender-modal")?.showModal();
-}
-
-export function closeAddNewReceiptModal() {
-  // @ts-ignore
-  document.getElementById("new-spender-modal")?.close();
-}
+export const {
+  open: openAddNewReceiptSpenderModal,
+  close: closeAddNewReceiptModal,
+} = createModalOpeners("new-spender-modal");

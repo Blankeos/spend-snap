@@ -40,3 +40,12 @@ export default function Modal(props: FlowProps<ModalProps>) {
     </dialog>
   );
 }
+
+export function createModalOpeners(id: string) {
+  return {
+    // @ts-ignore
+    open: (): void => document?.getElementById(id)?.showModal(),
+    // @ts-ignore
+    close: (): void => document?.getElementById(id)?.closeModal(),
+  };
+}

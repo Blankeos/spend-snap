@@ -11,7 +11,7 @@ import {
   VoidProps,
 } from "solid-js";
 import { array, number, object, optional, string } from "superstruct";
-import Modal from "./Modal";
+import Modal, { createModalOpeners } from "./Modal";
 
 import IconAdd from "~icons/mdi/plus";
 import IconRemove from "~icons/mdi/close-box";
@@ -19,6 +19,7 @@ import { createQuery } from "@tanstack/solid-query";
 import AddNewReceiptSpenderModal, {
   openAddNewReceiptSpenderModal,
 } from "./AddNewReceiptSpenderModal";
+import Button from "../Button";
 
 type AddNewReceiptModalProps = {
   collationId?: string;
@@ -73,32 +74,33 @@ export default function AddNewReceiptModal(
     totalAmount: optional(number()),
   });
 
-  const { form, data, addField, unsetField, setFields } = createForm({
-    extend: validator({ struct: addNewReceiptStruct, level: "error" }),
-    onSubmit: async (values: typeof addNewReceiptStruct.TYPE, context) => {
-      try {
-        if (!props.collationId) return;
+  const { form, data, addField, unsetField, setFields, isSubmitting } =
+    createForm({
+      extend: validator({ struct: addNewReceiptStruct, level: "error" }),
+      onSubmit: async (values: typeof addNewReceiptStruct.TYPE, context) => {
+        try {
+          if (!props.collationId) return;
 
-        const response = await hc.collations[":collationId"].receipt.$post({
-          param: {
-            collationId: props.collationId,
-          },
-          json: {
-            imageObjKey: "", // TODO, this is a state and image upload returned by S3,
-            segmentedAmounts: values.segmentedAmounts,
-            totalAmount: values.totalAmount,
-          },
-        });
+          const response = await hc.collations[":collationId"].receipt.$post({
+            param: {
+              collationId: props.collationId,
+            },
+            json: {
+              imageObjKey: "", // TODO, this is a state and image upload returned by S3,
+              segmentedAmounts: values.segmentedAmounts,
+              totalAmount: values.totalAmount,
+            },
+          });
 
-        const result = await response?.json();
+          const result = await response?.json();
 
-        // @ts-ignore
-        document.getElementById("create-collation-modal").close();
-      } catch (e) {
-        console.log("found an error here...");
-      }
-    },
-  });
+          // @ts-ignore
+          document.getElementById("create-collation-modal").close();
+        } catch (e) {
+          console.log("found an error here...");
+        }
+      },
+    });
 
   // Dynamic Array Field
   const segmentedAmounts = () => data("segmentedAmounts");
@@ -124,13 +126,13 @@ export default function AddNewReceiptModal(
         id="create-collation-modal"
         modalActions={
           <>
-            <button
-              class="btn btn-primary"
+            <Button
               form="add-new-receipt-form"
               type="submit"
+              isLoading={isSubmitting()}
             >
               Submit
-            </button>
+            </Button>
           </>
         }
       >
@@ -270,12 +272,5 @@ export default function AddNewReceiptModal(
   );
 }
 
-export const openAddNewReceiptModal = () => {
-  // @ts-ignore
-  document.getElementById("create-collation-modal")!.showModal();
-};
-
-export const closeAddNewReceiptModal = () => {
-  // @ts-ignore
-  document.getElementById("create-collation-modal")!.close();
-};
+export const { open: openAddNewReceiptModal, close: closeAddNewReceiptModal } =
+  createModalOpeners("create-collation-modal");
