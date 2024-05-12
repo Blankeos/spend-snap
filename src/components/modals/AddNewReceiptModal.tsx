@@ -1,15 +1,7 @@
 import { hc } from "@/lib/honoClient";
 import { createForm } from "@felte/solid";
 import { validator } from "@felte/validator-superstruct";
-import {
-  createSignal,
-  FlowProps,
-  For,
-  Index,
-  Match,
-  Switch,
-  VoidProps,
-} from "solid-js";
+import { createSignal, For, Index, Match, Switch, VoidProps } from "solid-js";
 import { array, number, object, optional, string } from "superstruct";
 import Modal, { createModalOpeners } from "./Modal";
 
@@ -123,7 +115,7 @@ export default function AddNewReceiptModal(
   return (
     <>
       <Modal
-        id="create-collation-modal"
+        id="add-new-receipt-modal"
         modalActions={
           <>
             <Button
@@ -255,22 +247,25 @@ export default function AddNewReceiptModal(
             </Switch>
           </div>
 
-          <div class="form-control">
+          <div class="form-control w-full">
             <label class="label">
               <span class="label-text">Image</span>
             </label>
             <input
               type="file"
-              class="file-input file-input-sm w-full max-w-xs file-input-bordered"
+              class="file-input file-input-sm w-full file-input-bordered file-input-primary"
             />
           </div>
         </form>
       </Modal>
 
-      <AddNewReceiptSpenderModal collationId={props.collationId} />
+      <AddNewReceiptSpenderModal
+        collationId={props.collationId}
+        onSuccess={() => spendersQuery?.refetch()}
+      />
     </>
   );
 }
 
 export const { open: openAddNewReceiptModal, close: closeAddNewReceiptModal } =
-  createModalOpeners("create-collation-modal");
+  createModalOpeners("add-new-receipt-modal");

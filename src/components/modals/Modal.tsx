@@ -8,8 +8,13 @@ type ModalProps = {
    */
   modalActions?: JSXElement;
 
-  /** Addtiional <dialog> classes. */
-  dialogClass?: string;
+  /**
+   * Addtiional <dialog> classes.
+   *
+   * @default
+   * "modal modal-bottom sm:modal-middle"
+   */
+  class?: string;
 
   /**
    * Apart from the document.getElementById().showModal and .close(),
@@ -24,7 +29,7 @@ export default function Modal(props: FlowProps<ModalProps>) {
       id={props.id}
       class={cn(
         "modal modal-bottom sm:modal-middle",
-        props.dialogClass,
+        props.class,
         props.forceOpen && "modal-open"
       )}
     >
@@ -46,6 +51,6 @@ export function createModalOpeners(id: string) {
     // @ts-ignore
     open: (): void => document?.getElementById(id)?.showModal(),
     // @ts-ignore
-    close: (): void => document?.getElementById(id)?.closeModal(),
+    close: (): void => document?.getElementById(id)?.close(),
   };
 }

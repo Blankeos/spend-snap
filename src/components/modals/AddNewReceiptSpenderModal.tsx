@@ -1,10 +1,18 @@
 import { hc } from "@/lib/honoClient";
 import { createForm } from "@felte/solid";
 import { validator } from "@felte/validator-superstruct";
-import { VoidProps } from "solid-js";
+import {
+  createEffect,
+  createSignal,
+  Match,
+  Show,
+  Switch,
+  VoidProps,
+} from "solid-js";
 import { object, optional, string } from "superstruct";
 import Modal, { createModalOpeners } from "./Modal";
 import Button from "../Button";
+import IconProfileDefault from "~icons/material-symbols/account-circle";
 
 type AddNewReceiptSpenderModalProps = {
   collationId?: string;
@@ -14,12 +22,17 @@ type AddNewReceiptSpenderModalProps = {
 export default function AddNewReceiptSpenderModal(
   props: VoidProps<AddNewReceiptSpenderModalProps>
 ) {
+  const [imageExists, setImageHasLoaded] = createSignal(false);
+
+  // ===========================================================================
+  // Form States
+  // ===========================================================================
   const addNewReceiptStruct = object({
     name: string(),
     imageURL: optional(string()),
   });
 
-  const { form, data } = createForm({
+  const { form, isSubmitting, data } = createForm({
     extend: validator({ struct: addNewReceiptStruct, level: "error" }),
     onSubmit: async (values: typeof addNewReceiptStruct.TYPE, context) => {
       try {
@@ -37,10 +50,11 @@ export default function AddNewReceiptSpenderModal(
 
         const result = await response?.json();
 
-        // @ts-ignore
-        document.getElementById("create-collation-modal").close();
+        props?.onSuccess?.();
+        closeAddNewReceiptModal();
+        console.log("shouldve closed by now");
       } catch (e) {
-        console.log("found an error here...");
+        console.log("found an error here...", e);
       }
     },
   });
@@ -48,10 +62,30 @@ export default function AddNewReceiptSpenderModal(
   return (
     <Modal
       id="new-spender-modal"
-      modalActions={<Button isLoading>Submit</Button>}
+      modalActions={
+        <Button form="new-spender-modal-form" isLoading={isSubmitting()}>
+          Submit
+        </Button>
+      }
     >
-      <form use:form={form}>
+      <form use:form={form} id="new-spender-modal-form">
         <h3 class="font-bold text-lg">New Spender</h3>
+
+        <div class="h-2" />
+        <div class="flex items-start justify-start">
+          {/* Image */}
+          <div class="shadow relative overflow-hidden rounded-full bg-gray-200 w-20 h-20 grid place-items-center">
+            <img
+              class="absolute inset-0 object-cover w-full h-full"
+              src={data().imageURL}
+              onload={() => setImageHasLoaded((_) => true)}
+              onerror={() => setImageHasLoaded((_) => false)}
+            />
+            <Show when={!imageExists()}>
+              <IconProfileDefault class="opacity-20" font-size="2rem" />
+            </Show>
+          </div>
+        </div>
 
         <div class="form-control">
           <label class="label">
