@@ -1,3 +1,8 @@
+import Button from "@/components/Button";
+import AddNewCollationModal, {
+  openAddNewCollationModal,
+} from "@/components/modals/AddNewCollationModal";
+import Modal from "@/components/modals/Modal";
 import { $user } from "@/contexts/authStore";
 import { useProtectedRoute } from "@/hooks/useProtectedRoute";
 import { hc } from "@/lib/honoClient";
@@ -28,38 +33,6 @@ export default function DashboardPage() {
     },
   }));
 
-  // ===========================================================================
-  // Form State
-  // ===========================================================================
-
-  const struct = object({
-    name: string(),
-    description: optional(string()),
-    totalBudget: number(),
-  });
-
-  const { form } = createForm({
-    extend: validator({ struct, level: "error" }),
-    onSubmit: async (values: typeof struct.TYPE, context) => {
-      try {
-        const response = await hc.collations.$post({
-          json: {
-            name: values.name,
-            description: values.description,
-            totalBudget: values.totalBudget,
-          },
-        });
-        const result = await response?.json();
-
-        await collationsQuery.refetch();
-
-        // @ts-ignore
-        document.getElementById("create-collation-modal").close();
-      } catch (e) {
-        console.log("found an error here...");
-      }
-    },
-  });
   return (
     <Show when={authStore().user} fallback="Not authenticated.">
       <main class="mx-auto max-w-5xl px-7 py-12">
@@ -75,8 +48,7 @@ export default function DashboardPage() {
             <button
               class="btn btn-ghost btn-sm5 border-2 border-gray-100"
               onClick={() => {
-                // @ts-ignore
-                document.getElementById("create-collation-modal").showModal();
+                openAddNewCollationModal();
               }}
             >
               + Create new collation
@@ -111,62 +83,7 @@ export default function DashboardPage() {
         </div>
       </main>
 
-      <dialog
-        id="create-collation-modal"
-        class="modal modal-bottom sm:modal-middle"
-      >
-        <div class="modal-box">
-          <h3 class="font-bold text-lg">New Receipt Collation</h3>
-
-          <form id="create-new-collation" use:form={form}>
-            <div class="form-control">
-              <label class="label">
-                <span class="label-text">Name</span>
-              </label>
-              <input
-                name="name"
-                type="text"
-                placeholder="Engineering Team Cebu Trip"
-                class="input input-bordered"
-              />
-            </div>
-            <div class="form-control">
-              <label class="label">
-                <span class="label-text">Description</span>
-              </label>
-              <input
-                name="description"
-                type="text"
-                placeholder="TPL Engineering Team going to Cebu in May 20-27"
-                class="input input-bordered"
-              />
-            </div>
-            <div class="form-control">
-              <label class="label">
-                <span class="label-text">Total Budget (PHP)</span>
-              </label>
-              <input
-                name="totalBudget"
-                type="number"
-                placeholder="100000"
-                class="input input-bordered"
-              />
-            </div>
-          </form>
-          <div class="modal-action">
-            <button
-              class="btn btn-primary"
-              form="create-new-collation"
-              type="submit"
-            >
-              Submit
-            </button>
-          </div>
-        </div>
-        <form method="dialog" class="modal-backdrop">
-          <button>close</button>
-        </form>
-      </dialog>
+      <AddNewCollationModal onSuccess={() => collationsQuery.refetch()} />
     </Show>
   );
 }

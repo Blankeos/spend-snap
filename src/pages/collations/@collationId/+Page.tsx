@@ -1,3 +1,6 @@
+import AddNewReceiptModal, {
+  openAddNewReceiptModal,
+} from "@/components/modals/AddNewReceiptModal";
 import Table from "@/components/Table";
 import { $user } from "@/contexts/authStore";
 import { useProtectedRoute } from "@/hooks/useProtectedRoute";
@@ -9,15 +12,20 @@ import createTween from "@solid-primitives/tween";
 import { createQuery } from "@tanstack/solid-query";
 import { createMemo, createSignal, onMount, Show } from "solid-js";
 import { usePageContext } from "vike-solid/usePageContext";
+import IconAdd from "~icons/mdi/plus";
 import IconImage from "~icons/mdi/tooltip-image";
 
 export default function CollationDetailsPage() {
   useProtectedRoute({ redirectTo: "/" });
   const authStore = useStore($user);
-
   const { routeParams } = usePageContext();
 
-  const [amountSpent, setAmountSpent] = createSignal(0);
+  // ===========================================================================
+  // States
+  // ===========================================================================
+  const [viewImageModalData, setViewImageModalData] = createSignal<{
+    imageUrl: string;
+  } | null>(null);
 
   // ===========================================================================
   // Queries
@@ -39,18 +47,39 @@ export default function CollationDetailsPage() {
     enabled: !!authStore().user && !!routeParams?.["collationId"],
   }));
 
+  const totalSpentQuery = createQuery(() => ({
+    queryKey: ["collation-details-page-total-spent"],
+    queryFn: async () => {
+      try {
+        const response = await hc.collations[
+          ":collationId"
+        ].receipt.totalSpent.$get({
+          param: {
+            collationId: routeParams!["collationId"],
+          },
+        });
+        return await response?.json();
+      } catch (e) {
+        return null;
+      }
+    },
+    enabled: !!authStore().user && !!routeParams?.["collationId"],
+  }));
+
   // ===========================================================================
   // Derived States
   // ===========================================================================
+
+  const totalSpent = createMemo(() => totalSpentQuery?.data?.totalSpent ?? 0);
 
   const totalBudget = createMemo(
     () => collationDetailsQuery?.data?.totalBudget ?? 0
   );
 
   const spentPercentage = createMemo(() => {
-    if (!collationDetailsQuery?.data?.totalBudget || !amountSpent()) return 0;
+    if (!collationDetailsQuery?.data?.totalBudget || !totalSpent()) return 0;
 
-    return (amountSpent() / collationDetailsQuery?.data?.totalBudget) * 100;
+    return (totalSpent() / collationDetailsQuery?.data?.totalBudget) * 100;
   });
 
   const tweenedSpentPercentage = createTween(spentPercentage, {
@@ -96,37 +125,50 @@ export default function CollationDetailsPage() {
           </div>
 
           <p>
-            Spent: {formatCurrency(amountSpent())} /{" "}
+            Spent: {formatCurrency(totalSpent())} /{" "}
             {formatCurrency(totalBudget())}
           </p>
         </div>
 
         <div class="h-5" />
 
-        <div class="flex gap-x-2 justify-center">
-          <button
-            class="btn"
-            onClick={() => setAmountSpent(totalBudget() * 0.25)}
-          >
-            25%
-          </button>
-          <button
-            class="btn"
-            onClick={() => setAmountSpent(totalBudget() * 0.5)}
-          >
-            50%
-          </button>
-          <button
-            class="btn"
-            onClick={() => setAmountSpent(totalBudget() * 0.95)}
-          >
-            95%
-          </button>
-        </div>
+        <Show when={false}>
+          <div class="flex gap-x-2 justify-center">
+            <button
+              class="btn"
+              // onClick={() => setAmountSpent(totalBudget() * 0.25)}
+            >
+              25%
+            </button>
+            <button
+              class="btn"
+              // onClick={() => setAmountSpent(totalBudget() * 0.5)}
+            >
+              50%
+            </button>
+            <button
+              class="btn"
+              // onClick={() => setAmountSpent(totalBudget() * 0.95)}
+            >
+              95%
+            </button>
+          </div>
+        </Show>
 
         <div class="h-5" />
 
-        <h2 class="text-lg font-bold">Receipts</h2>
+        <div class="flex gap-x-3 items-center">
+          <h2 class="text-lg font-bold">Receipts</h2>
+          <button
+            class="btn btn-xs border btn-ghost border-gray-200 flex gap-x-1"
+            onClick={() => {
+              openAddNewReceiptModal();
+            }}
+          >
+            <IconAdd class="text-gray-600" />
+            <span>Add New</span>
+          </button>
+        </div>
 
         <Table
           columns={[
@@ -137,7 +179,7 @@ export default function CollationDetailsPage() {
               },
             },
             {
-              header: "Total Spent",
+              header: "Total Amount",
               cell(props) {
                 return formatCurrency(props.row.original.amount);
               },
@@ -146,8 +188,21 @@ export default function CollationDetailsPage() {
               header: "Image",
               cell(props) {
                 return (
-                  <button class="btn btn-ghost btn-xs border border-gray-200 truncate">
-                    <IconImage class="text-gray-600" /> View Image
+                  <button
+                    class="btn btn-xs border btn-ghost border-gray-200"
+                    onClick={() => {
+                      setViewImageModalData({
+                        imageUrl: props.row.original.imageUrl,
+                      });
+
+                      // @ts-ignore
+                      document.getElementById("view-image-modal")!.showModal();
+                    }}
+                  >
+                    <span class="flex gap-x-1">
+                      <IconImage class="text-gray-600" />
+                      <span class="truncate">View Image</span>
+                    </span>
                   </button>
                 );
               },
@@ -157,16 +212,34 @@ export default function CollationDetailsPage() {
             {
               amount: 100,
               date: "2024-01-01",
-              imageUrl: "https://myimage.com/123.png",
+              imageUrl:
+                "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0b/ReceiptSwiss.jpg/170px-ReceiptSwiss.jpg",
             },
             {
               amount: 300,
               date: "2022-01-01",
-              imageUrl: "https://myimage.com/123.png",
+              imageUrl:
+                "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0b/ReceiptSwiss.jpg/170px-ReceiptSwiss.jpg",
             },
           ]}
         />
       </div>
+
+      {/* MODALS */}
+      <dialog id="view-image-modal" class="modal modal-bottom sm:modal-middle">
+        <div class="modal-box">
+          <img
+            src={viewImageModalData()?.imageUrl}
+            alt="receipt preview"
+            class="h-full w-full"
+          />
+        </div>
+        <form method="dialog" class="modal-backdrop">
+          <button>close</button>
+        </form>
+      </dialog>
+
+      <AddNewReceiptModal collationId={routeParams?.["collationId"]} />
     </Show>
   );
 }
