@@ -12,7 +12,11 @@ export default function Button(props: FlowProps<ButtonProps>) {
   const {} = mergeProps(props);
 
   return (
-    <button {...buttonProps} class={cn("btn btn-primary", props.class)}>
+    <button
+      {...buttonProps}
+      class={cn("btn btn-primary", props.class)}
+      disabled={props.isLoading}
+    >
       <span class="flex gap-x-2 items-center">
         <Show when={props.isLoading}>
           <IconLoading />
