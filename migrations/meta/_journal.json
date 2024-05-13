@@ -15,6 +15,13 @@
       "when": 1715020437400,
       "tag": "0001_cool_owl",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1715620014020,
+      "tag": "0002_green_captain_universe",
+      "breakpoints": true
     }
   ]
 }

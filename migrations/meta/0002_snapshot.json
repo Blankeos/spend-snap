@@ -1,6 +1,8 @@
 {
   "version": "6",
   "dialect": "sqlite",
+  "id": "285a755d-cc4b-46a2-89c6-f1d0310a0fc4",
+  "prevId": "ab34815a-e154-4d10-9c41-80d9501a0849",
   "tables": {
     "session": {
       "name": "session",
@@ -32,15 +34,15 @@
         "session_user_id_user_id_fk": {
           "name": "session_user_id_user_id_fk",
           "tableFrom": "session",
+          "tableTo": "user",
           "columnsFrom": [
             "user_id"
           ],
-          "tableTo": "user",
           "columnsTo": [
             "id"
           ],
-          "onUpdate": "no action",
-          "onDelete": "no action"
+          "onDelete": "no action",
+          "onUpdate": "no action"
         }
       },
       "compositePrimaryKeys": {},
@@ -124,6 +126,14 @@
           "notNull": true,
           "autoincrement": false
         },
+        "public": {
+          "name": "public",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": false
+        },
         "created_timestamp": {
           "name": "created_timestamp",
           "type": "text",
@@ -153,15 +163,15 @@
         "collation_created_by_id_user_id_fk": {
           "name": "collation_created_by_id_user_id_fk",
           "tableFrom": "collation",
+          "tableTo": "user",
           "columnsFrom": [
             "created_by_id"
           ],
-          "tableTo": "user",
           "columnsTo": [
             "id"
           ],
-          "onUpdate": "no action",
-          "onDelete": "no action"
+          "onDelete": "no action",
+          "onUpdate": "no action"
         }
       },
       "compositePrimaryKeys": {},
@@ -204,15 +214,15 @@
         "receipts_segmented_amounts_spender_collation_id_collation_id_fk": {
           "name": "receipts_segmented_amounts_spender_collation_id_collation_id_fk",
           "tableFrom": "receipts_segmented_amounts_spender",
+          "tableTo": "collation",
           "columnsFrom": [
             "collation_id"
           ],
-          "tableTo": "collation",
           "columnsTo": [
             "id"
           ],
-          "onUpdate": "no action",
-          "onDelete": "no action"
+          "onDelete": "no action",
+          "onUpdate": "no action"
         }
       },
       "compositePrimaryKeys": {},
@@ -247,8 +257,7 @@
           "type": "text",
           "primaryKey": false,
           "notNull": true,
-          "autoincrement": false,
-          "default": "''"
+          "autoincrement": false
         },
         "created_timestamp": {
           "name": "created_timestamp",
@@ -279,15 +288,15 @@
         "receipt_collation_id_collation_id_fk": {
           "name": "receipt_collation_id_collation_id_fk",
           "tableFrom": "receipt",
+          "tableTo": "collation",
           "columnsFrom": [
             "collation_id"
           ],
-          "tableTo": "collation",
           "columnsTo": [
             "id"
           ],
-          "onUpdate": "no action",
-          "onDelete": "no action"
+          "onDelete": "no action",
+          "onUpdate": "no action"
         }
       },
       "compositePrimaryKeys": {},
@@ -296,9 +305,8 @@
   },
   "enums": {},
   "_meta": {
+    "schemas": {},
     "tables": {},
     "columns": {}
-  },
-  "id": "ab34815a-e154-4d10-9c41-80d9501a0849",
-  "prevId": "30729859-6492-4569-b5a2-d1d89234f427"
+  }
 }

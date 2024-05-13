@@ -1,4 +1,4 @@
-import { sqliteTable, text, real } from "drizzle-orm/sqlite-core";
+import { sqliteTable, text, real, integer } from "drizzle-orm/sqlite-core";
 import { userTable } from "./auth";
 import { sql } from "drizzle-orm";
 import { createId } from "@paralleldrive/cuid2";
@@ -12,6 +12,9 @@ export const collationTable = sqliteTable("collation", {
   name: text("name").notNull(),
   description: text("description").notNull().default(""),
   totalBudget: real("total_budget").notNull(),
+
+  /** True if shareable to public. */
+  public: integer("public", { mode: "boolean" }).notNull().default(false),
 
   createdTimestamp: text("created_timestamp").default(sql`(CURRENT_TIMESTAMP)`),
   updatedTimestamp: text("updated_timestamp").default(sql`(CURRENT_TIMESTAMP)`),
