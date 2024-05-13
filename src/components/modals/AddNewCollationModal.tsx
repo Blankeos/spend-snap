@@ -70,7 +70,7 @@ export default function AddNewCollationModal(
           <input
             name="name"
             type="text"
-            placeholder="Engineering Team Cebu Trip"
+            placeholder="Name (e.g. Team Retreat)"
             class="input input-bordered"
           />
         </div>
@@ -81,7 +81,7 @@ export default function AddNewCollationModal(
           <input
             name="description"
             type="text"
-            placeholder="TPL Engineering Team going to Cebu in May 20-27"
+            placeholder="Description (e.g. Gathering in Cebu for May 20-27)"
             class="input input-bordered"
           />
         </div>
@@ -92,7 +92,7 @@ export default function AddNewCollationModal(
           <input
             name="totalBudget"
             type="number"
-            placeholder="100000"
+            placeholder="100,000"
             class="input input-bordered"
           />
         </div>

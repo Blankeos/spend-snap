@@ -9,8 +9,6 @@ type ButtonProps = {
 export default function Button(props: FlowProps<ButtonProps>) {
   const [_, buttonProps] = splitProps(props, ["class", "isLoading"]);
 
-  const {} = mergeProps(props);
-
   return (
     <button
       {...buttonProps}
