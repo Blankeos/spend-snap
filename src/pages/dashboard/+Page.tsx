@@ -1,21 +1,16 @@
-import Button from "@/components/Button";
 import AddNewCollationModal, {
   openAddNewCollationModal,
 } from "@/components/modals/AddNewCollationModal";
-import Modal from "@/components/modals/Modal";
 import { $user } from "@/contexts/authStore";
-import { useProtectedRoute } from "@/hooks/useProtectedRoute";
+import { getRandomIllustration } from "@/lib/randomizers/getRandomIllustration";
 import { hc } from "@/lib/honoClient";
-import { createForm } from "@felte/solid";
-import { validator } from "@felte/validator-superstruct";
 import { useStore } from "@nanostores/solid";
 import { createQuery } from "@tanstack/solid-query";
 import { format } from "numerable";
-import { createResource, For, Show } from "solid-js";
-import { number, object, optional, string } from "superstruct";
+import { For, Show } from "solid-js";
+import Protected from "@/components/hoc/Protected";
 
 export default function DashboardPage() {
-  useProtectedRoute({ redirectTo: "/" });
   const authStore = useStore($user);
 
   // ===========================================================================
@@ -31,10 +26,11 @@ export default function DashboardPage() {
         return null;
       }
     },
+    enabled: !!authStore().user,
   }));
 
   return (
-    <Show when={authStore().user} fallback="Not authenticated.">
+    <Protected>
       <main class="mx-auto max-w-5xl px-7 py-12">
         <div class="flex flex-col gap-y-5">
           <div class="text-3xl">
@@ -71,12 +67,17 @@ export default function DashboardPage() {
             {(collation) => (
               <a
                 href={`/collations/${collation.id}`}
-                class="card border h-64 w-64 p-4 hover:shadow-xl transition flex flex-col gap-y-2"
+                class="relative card border h-64 w-64 p-4 hover:shadow-xl transition flex flex-col gap-y-2 overflow-hidden hover:bg-primary/5"
               >
                 <h3 class="text-base font-medium">{collation.name}</h3>
                 <p class="badge badge-ghost">
                   PHP {format(collation.totalBudget, "0,0.00")}
                 </p>
+
+                <img
+                  src={getRandomIllustration(collation.id)}
+                  class="absolute -bottom-16 -right-16 opacity-20 grayscale"
+                />
               </a>
             )}
           </For>
@@ -84,6 +85,6 @@ export default function DashboardPage() {
       </main>
 
       <AddNewCollationModal onSuccess={() => collationsQuery.refetch()} />
-    </Show>
+    </Protected>
   );
 }
