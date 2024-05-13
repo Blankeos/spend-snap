@@ -3,6 +3,7 @@
 // https://github.com/phonzammi/vike-hono-example/blob/main/server/index.ts
 import { config } from "@/config";
 import { Hono } from "hono";
+import { serveStatic } from "hono/bun";
 import { renderPage } from "vike/server";
 import { appRouter } from "./_app";
 
@@ -10,6 +11,15 @@ const app = new Hono();
 
 // For the Backend APIs
 app.route("/api", appRouter);
+
+if (config.node_env === "production") {
+  app.use(
+    "/*",
+    serveStatic({
+      root: `./dist/client/`,
+    })
+  );
+}
 
 // For the Frontend + SSR
 app.get("*", async (c, next) => {
