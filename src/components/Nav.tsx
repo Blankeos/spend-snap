@@ -32,7 +32,7 @@ export default function Nav() {
       : "border-transparent hover:border-sky-600";
 
   return (
-    <nav class="bg-sky-800">
+    <nav class="bg-primary">
       <ul class="container flex items-center p-3 text-gray-200">
         <li class={`border-b-2 ${active("/")} mx-1.5 sm:mx-6`}>
           <a href="/">Home</a>
@@ -40,7 +40,7 @@ export default function Nav() {
         <li class={`border-b-2 ${active("/about")} mx-1.5 sm:mx-6`}>
           <a href="/about">About</a>
         </li>
-        <Show when={!authStore().user}>
+        <Show when={!authStore().user && !authStore().loading}>
           <li class={`border-b-2 ${active("/login")} mx-1.5 sm:mx-6`}>
             <a href="/login">Login</a>
           </li>
@@ -48,7 +48,7 @@ export default function Nav() {
             <a href="/register">Register</a>
           </li>
         </Show>
-        <Show when={authStore().user}>
+        <Show when={authStore().user && !authStore().loading}>
           <li class={`border-b-2 ${active("/dashboard")} mx-1.5 sm:mx-6`}>
             <a href="/dashboard">Dashboard</a>
           </li>

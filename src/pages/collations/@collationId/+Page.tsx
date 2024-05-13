@@ -1,23 +1,29 @@
+import Protected from "@/components/hoc/Protected";
+import ShowWhenAuthenticated from "@/components/hoc/ShowWhenAuthenticated";
 import AddNewReceiptModal, {
   openAddNewReceiptModal,
 } from "@/components/modals/AddNewReceiptModal";
 import Table from "@/components/Table";
 import { $user } from "@/contexts/authStore";
-import { useProtectedRoute } from "@/hooks/useProtectedRoute";
+import { createDerivedSpring, createSpring } from "@/hooks/createSpring";
 import { formatCurrency } from "@/lib/formatCurrency";
 import { formatDate } from "@/lib/formatDate";
 import { hc } from "@/lib/honoClient";
-import { useStore } from "@nanostores/solid";
 import createTween from "@solid-primitives/tween";
 import { createQuery } from "@tanstack/solid-query";
-import { createMemo, createSignal, onMount, Show } from "solid-js";
+import {
+  createEffect,
+  createMemo,
+  createSignal,
+  on,
+  onMount,
+  Show,
+} from "solid-js";
 import { usePageContext } from "vike-solid/usePageContext";
 import IconAdd from "~icons/mdi/plus";
 import IconImage from "~icons/mdi/tooltip-image";
 
 export default function CollationDetailsPage() {
-  useProtectedRoute({ redirectTo: "/" });
-  const authStore = useStore($user);
   const { routeParams } = usePageContext();
 
   // ===========================================================================
@@ -44,7 +50,7 @@ export default function CollationDetailsPage() {
         return null;
       }
     },
-    enabled: !!authStore().user && !!routeParams?.["collationId"],
+    enabled: !!routeParams?.["collationId"],
   }));
 
   const totalSpentQuery = createQuery(() => ({
@@ -63,7 +69,7 @@ export default function CollationDetailsPage() {
         return null;
       }
     },
-    enabled: !!authStore().user && !!routeParams?.["collationId"],
+    enabled: !!routeParams?.["collationId"],
   }));
 
   // ===========================================================================
@@ -86,17 +92,33 @@ export default function CollationDetailsPage() {
     duration: 500,
   });
 
+  const [springedSpentPercentage, setSpringedSpentPercentage] = createSpring(
+    0,
+    { stiffness: 0.03, damping: 0.3 }
+  );
+
+  createEffect(
+    on(
+      () => totalSpent(),
+      () => {
+        if (spentPercentage() === 0) {
+          setSpringedSpentPercentage(90);
+          console.log("nice");
+        }
+      }
+    )
+  );
+
   return (
-    <Show when={authStore().user} fallback="Not authenticated.">
+    <>
       <div class="max-w-5xl mx-auto px-8">
         <div class="h-5" />
-
         <header class="flex flex-col gap-y-2">
           <h1 class="text-2xl">
-            <b class="font-bold">Collation:</b>{" "}
+            <b class="font-bold">Collation:</b>
             {collationDetailsQuery?.data?.name}
           </h1>
-          {/* {JSON.stringify(collationDetailsQuery.data)} */}
+
           <p class="text-gray-600">
             <b class="font-medium">Description:</b>{" "}
             {collationDetailsQuery.data?.description}
@@ -107,19 +129,17 @@ export default function CollationDetailsPage() {
               formatDate(collationDetailsQuery.data?.createdTimestamp)}
           </span>
         </header>
-
         <div class="h-5" />
-
         <div class="flex flex-col items-center justify-center gap-y-3">
           <div
             class="w-52 h-52 rounded-full grid place-items-center"
             style={{
-              background: `conic-gradient(lightgreen ${tweenedSpentPercentage()}%, rgb(229, 231, 235) 0%)`,
+              background: `conic-gradient(lightgreen ${springedSpentPercentage()}%, rgb(229, 231, 235) 0%)`,
             }}
           >
             <div class="w-40 h-40 bg-white rounded-full shadow-lg border grid place-items-center">
               <span class="text-2xl">
-                {tweenedSpentPercentage().toFixed(2)}%
+                {springedSpentPercentage().toFixed(2)}%
               </span>
             </div>
           </div>
@@ -129,27 +149,20 @@ export default function CollationDetailsPage() {
             {formatCurrency(totalBudget())}
           </p>
         </div>
-
         <div class="h-5" />
 
         <Show when={false}>
           <div class="flex gap-x-2 justify-center">
-            <button
-              class="btn"
-              // onClick={() => setAmountSpent(totalBudget() * 0.25)}
-            >
+            <button class="btn" onClick={() => setSpringedSpentPercentage(0)}>
+              0%
+            </button>
+            <button class="btn" onClick={() => setSpringedSpentPercentage(25)}>
               25%
             </button>
-            <button
-              class="btn"
-              // onClick={() => setAmountSpent(totalBudget() * 0.5)}
-            >
+            <button class="btn" onClick={() => setSpringedSpentPercentage(50)}>
               50%
             </button>
-            <button
-              class="btn"
-              // onClick={() => setAmountSpent(totalBudget() * 0.95)}
-            >
+            <button class="btn" onClick={() => setSpringedSpentPercentage(95)}>
               95%
             </button>
           </div>
@@ -239,7 +252,9 @@ export default function CollationDetailsPage() {
         </form>
       </dialog>
 
-      <AddNewReceiptModal collationId={routeParams?.["collationId"]} />
-    </Show>
+      <ShowWhenAuthenticated>
+        <AddNewReceiptModal collationId={routeParams?.["collationId"]} />
+      </ShowWhenAuthenticated>
+    </>
   );
 }
