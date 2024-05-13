@@ -9,7 +9,7 @@ type UserStore = {
 
 export const $user = map<UserStore>({
   user: null,
-  loading: false,
+  loading: true,
 });
 
 // Setters
