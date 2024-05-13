@@ -98,15 +98,10 @@ export default function CollationDetailsPage() {
   );
 
   createEffect(
-    on(
-      () => totalSpent(),
-      () => {
-        if (spentPercentage() === 0) {
-          setSpringedSpentPercentage(90);
-          console.log("nice");
-        }
-      }
-    )
+    on([totalSpent, totalBudget], () => {
+      const percent = (totalSpent() / totalBudget()) * 100 || 0; // Fallback to 0 when NaN (divide by 0)
+      setSpringedSpentPercentage(percent);
+    })
   );
 
   return (
