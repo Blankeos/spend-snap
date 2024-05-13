@@ -99,7 +99,7 @@ export function loop(callback: TaskCallback): Task {
 // createSpring hook
 // ===========================================================================
 
-import { Accessor, createSignal } from "solid-js";
+import { Accessor, createEffect, createSignal, on } from "solid-js";
 
 export type SpringOptions = {
   /**
@@ -296,4 +296,22 @@ export function createSpring<T>(
   };
 
   return [springValue, set];
+}
+
+export function createDerivedSpring<T>(
+  target: Accessor<T>,
+  opts?: SpringOptions
+) {
+  const [springValue, setSpringValue] = createSpring(target() ?? 0, opts);
+
+  createEffect(
+    on(
+      () => target(),
+      () => {
+        setSpringValue(target() ?? 0);
+      }
+    )
+  );
+
+  return springValue;
 }
