@@ -1,15 +1,17 @@
 version: "3.8"
+
+# https://docs.localstack.cloud/user-guide/aws/s3/#s3-docker-image
 name: "spend-snap"
 services:
   localstack:
     container_name: "localstack"
-    image: localstack/localstack
+    image: localstack/localstack:s3-latest
     ports:
-      - "127.0.0.1:4566:4566" # LocalStack Gateway
-      - "127.0.0.1:4510-4559:4510-4559" # external service port range
+      - "127.0.0.1:4566:4566" # LocalStack Gateway (S3 IP)
+      # - "127.0.0.1:4510-4559:4510-4559" # external service port range
     environment:
       # LocalStack configuration: https://docs.localstack.cloud/references/configuration/
-      - DEBUG=${DEBUG:-0}
+      - DEBUG=1
     volumes:
       - "./data/localstack:/var/lib/localstack"
       - "/var/run/docker.sock:/var/run/docker.sock"
