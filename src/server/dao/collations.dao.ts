@@ -100,13 +100,14 @@ export const collationsDAO = {
         | "createdTimestamp"
         | "updatedTimestamp"
         | "collationId"
-      > & { segmentedAmounts: { spenderId: string; amount: number }[] }
+      > & { segmentedAmounts?: { spenderId: string; amount: number }[] }
     ) => {
       const segmentedAmountsMap = new Map<
         string,
-        (typeof params.segmentedAmounts)[0]
+        NonNullable<typeof params.segmentedAmounts>[0]
       >();
-      params.segmentedAmounts.forEach((segmentedAmount) => {
+
+      params.segmentedAmounts?.forEach((segmentedAmount) => {
         segmentedAmountsMap.set(segmentedAmount.spenderId, segmentedAmount);
       });
 
@@ -138,7 +139,10 @@ export const collationsDAO = {
             id: params.id,
             collationId: params.collationId,
             totalAmount: params.totalAmount,
-            segmentedAmounts: segmentedAmounts,
+            // Only add the segmented amounts if they exist.
+            segmentedAmounts: segmentedAmounts?.length
+              ? segmentedAmounts
+              : undefined,
             imageObjKey: params.imageObjKey,
           })
           .returning()

@@ -1,7 +1,5 @@
 import { IconAdd, IconRemove } from "@/components/icons";
 import { hc } from "@/lib/honoClient";
-import { createForm } from "@felte/solid";
-import { validator } from "@felte/validator-superstruct";
 import { createQuery } from "@tanstack/solid-query";
 import {
   createMemo,
@@ -13,8 +11,20 @@ import {
   VoidProps,
 } from "solid-js";
 
-import { array, number, object, optional, string } from "superstruct";
+import { reporter, ValidationMessage } from "@felte/reporter-solid";
+import { createForm } from "@felte/solid";
+import { validator } from "@felte/validator-superstruct";
+import {
+  any,
+  array,
+  nonempty,
+  number,
+  object,
+  optional,
+  string,
+} from "superstruct";
 
+import { toast } from "solid-sonner";
 import Button from "../Button";
 import AddNewReceiptSpenderModal, {
   openAddNewReceiptSpenderModal,
@@ -72,11 +82,15 @@ export default function AddNewReceiptModal(
       )
     ),
     totalAmount: optional(number()),
+    image: object(),
   });
 
   const { form, data, addField, unsetField, setFields, isSubmitting } =
     createForm({
-      extend: validator({ struct: addNewReceiptStruct, level: "error" }),
+      extend: [
+        reporter(),
+        validator({ struct: addNewReceiptStruct, level: "error" }),
+      ],
       onSubmit: async (values: typeof addNewReceiptStruct.TYPE, context) => {
         try {
           if (!props.collationId) return;
@@ -86,18 +100,23 @@ export default function AddNewReceiptModal(
               collationId: props.collationId,
             },
             json: {
-              imageObjKey: "", // TODO, this is a state and image upload returned by S3,
+              /** @ts-ignore */
+              imageObjKey: undefined, // TODO, this is a state and image upload returned by S3,
               segmentedAmounts: values.segmentedAmounts,
               totalAmount: values.totalAmount,
             },
           });
 
-          const result = await response?.json();
+          if (!response.ok) {
+            const error = await response.json();
+            throw Error();
+          }
 
-          // @ts-ignore
-          document.getElementById("create-collation-modal").close();
+          closeAddNewReceiptModal();
         } catch (e) {
-          console.log("found an error here...");
+          toast.error("Something went wrong.", {
+            duration: 500,
+          });
         }
       },
     });
@@ -123,6 +142,7 @@ export default function AddNewReceiptModal(
   return (
     <>
       <Modal
+        forceOpen
         id="add-new-receipt-modal"
         modalActions={
           <>
@@ -136,6 +156,7 @@ export default function AddNewReceiptModal(
           </>
         }
       >
+        {/* {JSON.stringify(data)} */}
         <h3 class="font-bold text-lg">Add New Receipt</h3>
 
         <form id="add-new-receipt-form" use:form={form}>
@@ -179,6 +200,13 @@ export default function AddNewReceiptModal(
                   placeholder="Amount (e.g. 500)"
                   class="input input-bordered input-sm"
                 />
+                <ValidationMessage for="totalAmount">
+                  {(messages) => (
+                    <span class="text-error text-xs mt-0.5">
+                      {messages?.[0]}
+                    </span>
+                  )}
+                </ValidationMessage>
               </Match>
 
               <Match when={amountInputMode() === "segmented"}>
@@ -283,10 +311,16 @@ export default function AddNewReceiptModal(
               <span class="label-text">Image</span>
             </label>
             <input
+              name="image"
               type="file"
               class="file-input file-input-sm w-full file-input-bordered file-input-primary"
               accept="image/*"
             />
+            <ValidationMessage for="image">
+              {(messages) => (
+                <span class="text-error text-xs mt-0.5">{messages?.[0]}</span>
+              )}
+            </ValidationMessage>
           </div>
         </form>
       </Modal>
