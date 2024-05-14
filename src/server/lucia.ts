@@ -2,7 +2,7 @@ import { Lucia, TimeSpan } from "lucia";
 import { db } from "./db";
 import { DrizzleSQLiteAdapter } from "@lucia-auth/adapter-drizzle";
 import { sessionTable, userTable } from "./schema/auth";
-import { config } from "@/config";
+import { privateConfig } from "@/config.private";
 
 const adapter = new DrizzleSQLiteAdapter(db, sessionTable, userTable);
 
@@ -11,7 +11,7 @@ export const lucia = new Lucia(adapter, {
   sessionCookie: {
     attributes: {
       // set to `true` when using HTTPS
-      secure: config.node_env === "production",
+      secure: privateConfig.NODE_ENV === "production",
     },
 
     /**

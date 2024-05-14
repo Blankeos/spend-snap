@@ -1,14 +1,17 @@
 import { drizzle } from "drizzle-orm/libsql";
 import { createClient } from "@libsql/client";
-import { config } from "@/config";
-import * as authSchema from "./schema/auth";
+import { privateConfig } from "@/config.private";
 
-const schema = { ...authSchema }; // add the other schemas here later.
+// Schemas
+import * as authSchema from "./schema/auth";
+import * as collationsSchema from "./schema/collations";
+
+const schema = { ...authSchema, ...collationsSchema }; // add the other schemas here later.
 
 // LibSQL client for Sqlite.
 export const client = createClient({
-  url: config.database.url,
-  authToken: config.database.authToken,
+  url: privateConfig.database.URL,
+  authToken: privateConfig.database.AUTH_TOKEN,
 });
 
 /** DrizzleORM client for LibSQL client. */

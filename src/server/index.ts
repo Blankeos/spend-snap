@@ -1,7 +1,7 @@
 //
 // How to serve Vike (SSR middleware) via a Hono server.
 // https://github.com/phonzammi/vike-hono-example/blob/main/server/index.ts
-import { config } from "@/config";
+import { privateConfig } from "@/config.private";
 import { Hono } from "hono";
 import { serveStatic } from "hono/bun";
 import { renderPage } from "vike/server";
@@ -12,7 +12,7 @@ const app = new Hono();
 // For the Backend APIs
 app.route("/api", appRouter);
 
-if (config.node_env === "production") {
+if (privateConfig.NODE_ENV === "production") {
   app.use(
     "/*",
     serveStatic({
@@ -47,9 +47,9 @@ app.onError((_, c) => {
   return c.text("", 500);
 });
 
-console.log("Running at http://localhost:" + config.port);
+console.log("Running at http://localhost:" + privateConfig.PORT);
 
 export default {
-  port: config.port,
+  port: privateConfig.PORT,
   fetch: app.fetch,
 };
