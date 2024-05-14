@@ -18,12 +18,14 @@ export const $user = map<UserStore>({
 export const initializeUser = async (options?: ClientRequestOptions) => {
   $user.setKey("loading", true);
 
-  console.log("User is initializing.");
-  const response = await hc.auth.$get(options);
-  const result = await response.json();
-
-  console.log(result);
-  $user.set({ user: result?.user ?? null, loading: false });
+  try {
+    console.log("User is initializing.");
+    const response = await hc.auth.$get(options);
+    const result = await response.json();
+    $user.set({ user: result?.user ?? null, loading: false });
+  } finally {
+    $user.setKey("loading", false);
+  }
 };
 
 /** Call this when logging in. */

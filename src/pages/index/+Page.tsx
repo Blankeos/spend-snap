@@ -23,7 +23,6 @@ export default function Home() {
       >
         NanoStore {count().countClicked}
       </button>
-
       <p class="mt-8">
         Visit{" "}
         <a
