@@ -1,17 +1,25 @@
+import { IconAdd, IconRemove } from "@/components/icons";
 import { hc } from "@/lib/honoClient";
 import { createForm } from "@felte/solid";
 import { validator } from "@felte/validator-superstruct";
-import { createSignal, For, Index, Match, Switch, VoidProps } from "solid-js";
-import { array, number, object, optional, string } from "superstruct";
-import Modal, { createModalOpeners } from "./Modal";
-
-import IconAdd from "~icons/mdi/plus";
-import IconRemove from "~icons/mdi/close-box";
 import { createQuery } from "@tanstack/solid-query";
+import {
+  createMemo,
+  createSignal,
+  For,
+  Index,
+  Match,
+  Switch,
+  VoidProps,
+} from "solid-js";
+
+import { array, number, object, optional, string } from "superstruct";
+
+import Button from "../Button";
 import AddNewReceiptSpenderModal, {
   openAddNewReceiptSpenderModal,
 } from "./AddNewReceiptSpenderModal";
-import Button from "../Button";
+import Modal, { createModalOpeners } from "./Modal";
 
 type AddNewReceiptModalProps = {
   collationId?: string;
@@ -176,71 +184,80 @@ export default function AddNewReceiptModal(
               <Match when={amountInputMode() === "segmented"}>
                 <div class="flex flex-col w-full gap-y-1">
                   <Index each={segmentedAmounts()}>
-                    {(_, index) => (
-                      <div class="flex gap-x-1 w-full">
-                        <div class="w-full flex gap-x-2 items-center">
-                          <div
-                            class="rounded-full bg-gray-100 w-8 h-8 flex-shrink-0"
-                            style={{
-                              "background-image": `url(${
-                                spendersQuery?.data?.spenders?.find(
-                                  (spender) =>
-                                    spender.id ===
-                                    data().segmentedAmounts?.at(index)
-                                      ?.spenderId
-                                )?.imageURL
-                              })`,
-                              "background-size": "cover",
-                              "background-position": "center",
-                            }}
+                    {(_, index) => {
+                      const spenderObject = createMemo(() =>
+                        spendersQuery?.data?.spenders?.find(
+                          (spender) =>
+                            spender.id ===
+                            data().segmentedAmounts?.at(index)?.spenderId
+                        )
+                      );
+
+                      console.log("rerender me");
+
+                      return (
+                        <div class="flex gap-x-1 w-full">
+                          <div class="w-full flex gap-x-2 items-center">
+                            <div
+                              class="rounded-full bg-gray-100 w-8 h-8 flex-shrink-0"
+                              style={{
+                                ...(!!spenderObject && {
+                                  "background-image": `url(${
+                                    spenderObject()?.imageURL
+                                  })`,
+                                  "background-size": "cover",
+                                  "background-position": "center",
+                                }),
+                              }}
+                            />
+                            <select
+                              name={`segmentedAmounts.${index}.spenderId`}
+                              class="select select-sm select-primary w-full max-w-xs"
+                              onChange={(e) => {
+                                if (e.currentTarget.value === "new-spender") {
+                                  openAddNewReceiptSpenderModal();
+
+                                  setFields(
+                                    `segmentedAmounts.${index}.spenderId`,
+                                    undefined
+                                  );
+                                }
+                              }}
+                            >
+                              <option disabled value={undefined}>
+                                Pick a spender
+                              </option>
+
+                              <For each={spendersQuery?.data?.spenders ?? []}>
+                                {(spender) => (
+                                  <option value={spender.id}>
+                                    {spender.name}
+                                  </option>
+                                )}
+                              </For>
+
+                              <option value="new-spender">
+                                [ + Add New Spender ]
+                              </option>
+                            </select>
+                          </div>
+
+                          <input
+                            name={`segmentedAmounts.${index}.amount`}
+                            type="text"
+                            placeholder="Amount (e.g. 500)"
+                            class="input input-bordered w-full input-sm"
                           />
-                          <select
-                            name={`segmentedAmounts.${index}.spenderId`}
-                            class="select select-sm select-primary w-full max-w-xs"
-                            onChange={(e) => {
-                              if (e.currentTarget.value === "new-spender") {
-                                openAddNewReceiptSpenderModal();
-
-                                setFields(
-                                  `segmentedAmounts.${index}.spenderId`,
-                                  undefined
-                                );
-                              }
-                            }}
+                          <button
+                            type="button"
+                            class="flex-shrink"
+                            onClick={() => removeSegmentedAmount(index)}
                           >
-                            <option disabled value={undefined}>
-                              Pick a spender
-                            </option>
-
-                            <For each={spendersQuery?.data?.spenders ?? []}>
-                              {(spender) => (
-                                <option value={spender.id}>
-                                  {spender.name}
-                                </option>
-                              )}
-                            </For>
-
-                            <option value="new-spender">
-                              [ + Add New Spender ]
-                            </option>
-                          </select>
+                            <IconRemove class="text-error" />
+                          </button>
                         </div>
-
-                        <input
-                          name={`segmentedAmounts.${index}.amount`}
-                          type="text"
-                          placeholder="Amount (e.g. 500)"
-                          class="input input-bordered w-full input-sm"
-                        />
-                        <button
-                          type="button"
-                          class="flex-shrink"
-                          onClick={() => removeSegmentedAmount(index)}
-                        >
-                          <IconRemove class="text-error" />
-                        </button>
-                      </div>
-                    )}
+                      );
+                    }}
                   </Index>
                   <button
                     type="button"
@@ -268,6 +285,7 @@ export default function AddNewReceiptModal(
             <input
               type="file"
               class="file-input file-input-sm w-full file-input-bordered file-input-primary"
+              accept="image/*"
             />
           </div>
         </form>

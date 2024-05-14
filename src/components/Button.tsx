@@ -1,6 +1,7 @@
 import { cn } from "@/lib/cn";
 import { FlowProps, JSX, mergeProps, Show, splitProps } from "solid-js";
-import IconLoading from "~icons/line-md/loading-twotone-loop";
+import { IconLoading } from "./icons";
+
 type ButtonProps = {
   class?: string;
   isLoading?: boolean;

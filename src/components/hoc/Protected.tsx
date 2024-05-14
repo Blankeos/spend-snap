@@ -1,5 +1,5 @@
+import { IconHappy, IconLoading } from "@/components/icons";
 import { $user } from "@/contexts/authStore";
-import IconYay from "~icons/lets-icons/happy";
 import { useStore } from "@nanostores/solid";
 import { createPresence } from "@solid-primitives/presence";
 import {
@@ -13,7 +13,6 @@ import {
   Switch,
 } from "solid-js";
 import { navigate } from "vike/client/router";
-import IconLoading from "~icons/line-md/loading-twotone-loop";
 
 export default function Protected(props: FlowProps) {
   const TRANSITION_DURATION = 1000;
@@ -60,7 +59,7 @@ export default function Protected(props: FlowProps) {
                 opacity: isShown() ? 1 : "0",
               }}
             />
-            <IconYay
+            <IconHappy
               font-size="3rem"
               class="absolute"
               style={{

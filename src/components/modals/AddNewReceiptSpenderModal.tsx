@@ -12,7 +12,7 @@ import {
 import { object, optional, string } from "superstruct";
 import Modal, { createModalOpeners } from "./Modal";
 import Button from "../Button";
-import IconProfileDefault from "~icons/material-symbols/account-circle";
+import { IconProfileDefault } from "@/components/icons";
 
 type AddNewReceiptSpenderModalProps = {
   collationId?: string;

@@ -20,8 +20,7 @@ import {
   Show,
 } from "solid-js";
 import { usePageContext } from "vike-solid/usePageContext";
-import IconAdd from "~icons/mdi/plus";
-import IconImage from "~icons/mdi/tooltip-image";
+import { IconAdd, IconImage } from "@/components/icons";
 
 export default function CollationDetailsPage() {
   const { routeParams } = usePageContext();
