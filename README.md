@@ -5,6 +5,8 @@ where we have to collate receipts from a trip for claims later on.
 
 Could be a start-up idea, idk.
 
+<h2>Table of Contents</h2>
+
 - [📺 Tech Stack](#%F0%9F%93%BA-tech-stack)
 - [Requirements](#requirements)
 - [🚀 Get started](#%F0%9F%9A%80-get-started)
@@ -40,10 +42,10 @@ bun s3:create
 
 # AWS Configure first (Just use placeholders: https://github.com/localstack/localstack/issues/8424)
 aws configure
-AWS Access Key ID [****************test]: test
-AWS Secret Access Key [****************test]: test
-Default region name [us-east-1]: ap-southeast-1
-Default output format [None]:
+> AWS Access Key ID [****************test]: test
+> AWS Secret Access Key [****************test]: test
+> Default region name [us-east-1]: us-east-1 # Because has the features we need.
+> Default output format [None]:
 
 # Create a bucket in s3.
 aws --endpoint-url=http://localhost:4566 s3api create-bucket --bucket spend-snap --region us-east-1
@@ -52,7 +54,18 @@ aws --endpoint-url=http://localhost:4566 s3api create-bucket --bucket spend-snap
 aws --endpoint-url=http://localhost:45666 s3api list-buckets
 ```
 
-3.
+3. Copy and fill env
+
+```sh
+cp .env.example .env
+```
+
+4. Install deps and run
+
+```sh
+bun install
+bun run dev
+```
 
 <!-- # SolidStart
 
