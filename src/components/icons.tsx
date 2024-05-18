@@ -4,3 +4,4 @@ export { default as IconAdd } from "~icons/mdi/plus";
 export { default as IconRemove } from "~icons/mdi/close-box";
 export { default as IconProfileDefault } from "~icons/material-symbols/person-rounded";
 export { default as IconImage } from "~icons/mdi/image";
+export { default as IconEmojiSad } from "~icons/fluent-emoji/sad-but-relieved-face";
