@@ -14,15 +14,7 @@ import {
 import { reporter, ValidationMessage } from "@felte/reporter-solid";
 import { createForm } from "@felte/solid";
 import { validator } from "@felte/validator-superstruct";
-import {
-  any,
-  array,
-  nonempty,
-  number,
-  object,
-  optional,
-  string,
-} from "superstruct";
+import { array, number, object, optional, string } from "superstruct";
 
 import { toast } from "solid-sonner";
 import Button from "../Button";
@@ -99,13 +91,15 @@ export default function AddNewReceiptModal(
         try {
           if (!props.collationId) return;
 
+          const file = data("image") as unknown as File;
+
           // 1. Get the upload URL
           toast.loading("Getting Signed URL...", { id: FORM_TOASTID });
 
           console.log("GETTING UPLOAD URL.");
 
           const getSignedUrlResponse =
-            await hc.collations.receipt.generateUploadUrl.$get();
+            await hc.collations.receipt.generateUploadUrl.$get({});
 
           const { uniqueId, signedUrl } = await getSignedUrlResponse.json();
 
@@ -114,17 +108,13 @@ export default function AddNewReceiptModal(
           // 2. POST to the upload URL
           toast.loading("Uploading Image...", { id: FORM_TOASTID });
 
-          const file = data("image") as unknown as File;
-          const formData = new FormData();
-          formData.append("Content-Type", file.type);
-          formData.append("file", file);
-
-          // const headers = new Headers();
-          // headers.append("Content-Type", file.type);
-
+          // ----- PUT approach (What works for BackBlaze) -----
           const fileUploadResponse = await fetch(signedUrl, {
             method: "PUT",
-            body: formData,
+            body: file,
+            headers: {
+              "Content-Type": file.type,
+            },
           });
 
           // 3. Add Receipt (Attach the imageObjectKey to request).
@@ -150,6 +140,7 @@ export default function AddNewReceiptModal(
           toast.success("Added Receipt!", { id: FORM_TOASTID });
 
           props.onSuccess?.();
+
           closeAddNewReceiptModal();
         } catch (e) {
           console.log(e);

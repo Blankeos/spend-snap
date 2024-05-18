@@ -1,14 +1,7 @@
 import { hc } from "@/lib/honoClient";
 import { createForm } from "@felte/solid";
 import { validator } from "@felte/validator-superstruct";
-import {
-  createEffect,
-  createSignal,
-  Match,
-  Show,
-  Switch,
-  VoidProps,
-} from "solid-js";
+import { createSignal, Show, VoidProps } from "solid-js";
 import { object, optional, string } from "superstruct";
 import Modal, { createModalOpeners } from "./Modal";
 import Button from "../Button";
