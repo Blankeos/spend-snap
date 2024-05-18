@@ -9,21 +9,22 @@ export const privateConfig = {
   /** DB-specific settings. */
   database: {
     /** The url of the database. */
-    URL: import.meta.env.DATABASE_URL!,
+    URL: import.meta.env.DATABASE_URL! as string,
     /** Not needed in development. https://docs.turso.tech/local-development#sqlite */
-    AUTH_TOKEN: import.meta.env.DATABASE_AUTH_TOKEN!,
+    AUTH_TOKEN: import.meta.env.DATABASE_AUTH_TOKEN! as string,
   },
   /** S3Bucket-specific settings. */
   s3: {
     /** Application Key ID in B2 (accessKeyId in S3) */
-    ACCESS_KEY_ID: import.meta.env.S3_ACCESS_KEY_ID!,
+    ACCESS_KEY_ID: import.meta.env.S3_ACCESS_KEY_ID! as string,
     /** Application Key in B2 (secretAccessKey in S3) */
-    SECRET_ACCESS_KEY: import.meta.env.S3_SECRET_ACCESS_KEY!,
+    SECRET_ACCESS_KEY: import.meta.env.S3_SECRET_ACCESS_KEY! as string,
     /** Name of the bucket. */
-    BUCKET_NAME: import.meta.env.S3_BUCKET_NAME! ?? "spend-snap",
+    BUCKET_NAME: (import.meta.env.S3_BUCKET_NAME! ?? "spend-snap") as string,
     /** Region of the bucket. */
-    REGION: import.meta.env.S3_REGION! ?? "us-east-1",
-    /** URL of the bucket. */
-    ENDPOINT: import.meta.env.S3_ENDPOINT! ?? "http://localhost:4566",
+    REGION: import.meta.env.S3_REGION! ?? ("us-east-1" as string),
+    /** URL of the bucket. Important that this starts with http:// or https:// */
+    ENDPOINT: (import.meta.env.S3_ENDPOINT! ??
+      "http://127.0.0.1:9000") as string,
   },
 };
