@@ -1,3 +1,5 @@
+const plugin = require("tailwindcss/plugin");
+
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   content: ["./src/**/*.{html,js,jsx,ts,tsx}"],
@@ -11,5 +13,30 @@ module.exports = {
   daisyui: {
     themes: ["light"],
   },
-  plugins: [require("daisyui")],
+  plugins: [
+    plugin(function ({ addComponents }) {
+      addComponents({
+        ".no-scrollbar": {
+          /* Hide scrollbar for Chrome, Safari and Opera */
+          "&::-webkit-scrollbar": {
+            display: "none",
+          },
+          /* Hide scrollbar for IE, Edge and Firefox */
+          "-ms-overflow-style": "none" /* IE and Edge */,
+          "scrollbar-width": "none" /* Firefox */,
+        },
+        ".no-arrows": {
+          "&::-webkit-inner-spin-button": {
+            "-webkit-appearance": "none",
+            margin: 0,
+          },
+          "&::-webkit-outer-spin-button": {
+            "-webkit-appearance": "none",
+            margin: 0,
+          },
+        },
+      });
+    }),
+    require("daisyui"),
+  ],
 };
