@@ -24,7 +24,7 @@ export default function App(props: FlowProps) {
       <CountContextProvider>
         <Nav />
         {props.children}
-        <Toaster />
+        <Toaster position="top-center" />
       </CountContextProvider>
     </QueryClientProvider>
   );
