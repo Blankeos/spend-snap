@@ -12,9 +12,12 @@ import createTween from "@solid-primitives/tween";
 import { createQuery } from "@tanstack/solid-query";
 import { createEffect, createMemo, createSignal, on, Show } from "solid-js";
 import { usePageContext } from "vike-solid/usePageContext";
-import { IconAdd, IconLoading } from "@/components/icons";
+import { IconAdd, IconImage, IconLoading } from "@/components/icons";
 import Button from "@/components/Button";
 import { createStore } from "solid-js/store";
+import ViewImageModal, {
+  openViewImageModal,
+} from "@/components/modals/ViewImageModal";
 
 export default function CollationDetailsPage() {
   const { routeParams } = usePageContext();
@@ -23,7 +26,7 @@ export default function CollationDetailsPage() {
   // States
   // ===========================================================================
   const [viewImageModalData, setViewImageModalData] = createSignal<{
-    imageUrl: string;
+    imageObjectKey: string;
   } | null>(null);
 
   const [paginatedStore, setPaginatedStore] = createStore({
@@ -237,29 +240,27 @@ export default function CollationDetailsPage() {
                 return formatCurrency(props.row.original?.totalAmount ?? 0);
               },
             },
-            // {
-            //   header: "Image",
-            //   cell(props) {
-            //     return (
-            //       <button
-            //         class="btn btn-xs border btn-ghost border-gray-200"
-            //         onClick={() => {
-            //           setViewImageModalData({
-            //             imageUrl: props.row.original.imageUrl,
-            //           });
-
-            //           // @ts-ignore
-            //           document.getElementById("view-image-modal")!.showModal();
-            //         }}
-            //       >
-            //         <span class="flex gap-x-1">
-            //           <IconImage class="text-gray-600" />
-            //           <span class="truncate">View Image</span>
-            //         </span>
-            //       </button>
-            //     );
-            //   },
-            // },
+            {
+              header: "Image",
+              cell(props) {
+                return (
+                  <button
+                    class="btn btn-xs border btn-ghost border-gray-200"
+                    onClick={() => {
+                      setViewImageModalData({
+                        imageObjectKey: props.row.original?.imageObjKey,
+                      });
+                      openViewImageModal();
+                    }}
+                  >
+                    <span class="flex gap-x-1">
+                      <IconImage class="text-gray-600" />
+                      <span class="truncate">View Image</span>
+                    </span>
+                  </button>
+                );
+              },
+            },
           ]}
           currentPage={paginatedStore.currentPage}
           hasPrevious={paginatedStore.hasPrevious ?? false}
@@ -275,25 +276,14 @@ export default function CollationDetailsPage() {
       </div>
 
       {/* MODALS */}
-      <dialog id="view-image-modal" class="modal modal-bottom sm:modal-middle">
-        <div class="modal-box">
-          <img
-            src={viewImageModalData()?.imageUrl}
-            alt="receipt preview"
-            class="h-full w-full"
-          />
-        </div>
-        <form method="dialog" class="modal-backdrop">
-          <button>close</button>
-        </form>
-      </dialog>
-
+      <ViewImageModal imgObjectKey={viewImageModalData()?.imageObjectKey} />
       <ShowWhenAuthenticated>
         <AddNewReceiptModal
           collationId={routeParams?.["collationId"]}
           onSuccess={() => {
             collationQuery?.refetch();
             totalSpentQuery?.refetch();
+            paginatedReceiptsQuery?.refetch();
           }}
         />
       </ShowWhenAuthenticated>

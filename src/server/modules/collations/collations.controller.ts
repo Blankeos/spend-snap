@@ -6,6 +6,7 @@ import { Awaited, Type as T, TNumber } from "@sinclair/typebox";
 import { HTTPException } from "hono/http-exception";
 import {
   generateUploadUrl,
+  getImageUrlFromImageObjKey,
   transferFileFromTempToPermanent,
 } from "@/server/s3";
 import { createId } from "@paralleldrive/cuid2";
@@ -147,9 +148,25 @@ export const collationsController = new Hono()
   .get("/receipt/generateUploadUrl", requireAuthMiddleware, async (c) => {
     const uniqueId = createId();
 
-    const signedUrl = await generateUploadUrl(uniqueId);
+    const { fields, signedUrl } = await generateUploadUrl(uniqueId);
 
-    return c.json({ uniqueId: uniqueId, signedUrl: signedUrl });
+    return c.json({
+      uniqueId: uniqueId,
+      signedUrl: signedUrl,
+      fields: fields,
+    });
+  })
+  .get("/receipt/image/:uniqueId", async (c) => {
+    const uniqueId = c.req.param("uniqueId");
+
+    const imageUrl = await getImageUrlFromImageObjKey(uniqueId);
+
+    if (!imageUrl)
+      throw new HTTPException(404, {
+        message: "Image Object Key not found in storage.",
+      });
+
+    return c.text(imageUrl);
   })
   // Create Receipt
   .post(
