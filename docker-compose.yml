@@ -1,17 +1,35 @@
-version: "3.8"
+# NOTE: Don't use this anymore. Minio, Localstack don't fit any of my usecases.
+# https://dev.to/arifszn/minio-mock-s3-in-local-development-4ke6
 
-# https://docs.localstack.cloud/user-guide/aws/s3/#s3-docker-image
-name: "spend-snap"
+version: "3"
 services:
-  localstack:
-    container_name: "localstack"
-    image: localstack/localstack:s3-latest
+  minio:
+    image: "minio/minio:latest"
     ports:
-      - "127.0.0.1:4566:4566" # LocalStack Gateway (S3 IP)
-      # - "127.0.0.1:4510-4559:4510-4559" # external service port range
+      - "${FORWARD_MINIO_PORT:-9000}:9000"
+      - "${FORWARD_MINIO_CONSOLE_PORT:-9090}:9090"
     environment:
-      # LocalStack configuration: https://docs.localstack.cloud/references/configuration/
-      - DEBUG=1
+      MINIO_ROOT_USER: "root"
+      MINIO_ROOT_PASSWORD: "password"
     volumes:
-      - "./data/localstack:/var/lib/localstack"
-      - "/var/run/docker.sock:/var/run/docker.sock"
+      - "./data/minio:/data/minio"
+    command: minio server /data/minio --console-address ":9090"
+volumes:
+  minio:
+    driver: local
+# https://docs.localstack.cloud/user-guide/aws/s3/#s3-docker-image
+# name: "spend-snap"
+# services:
+#   localstack:
+#     container_name: "localstack"
+#     image: localstack/localstack:s3-latest
+#     ports:
+#       - "127.0.0.1:4566:4566" # LocalStack Gateway (S3 IP)
+#       # - "127.0.0.1:4510-4559:4510-4559" # external service port range
+#     environment:
+#       # LocalStack configuration: https://docs.localstack.cloud/references/configuration/
+#       - DEBUG=1
+#       - PERSISTENCE=1 # https://docs.localstack.cloud/user-guide/state-management/persistence/ (otherwise it loses data when it closes)
+#     volumes:
+#       - "./data/localstack:/var/lib/localstack"
+#       - "/var/run/docker.sock:/var/run/docker.sock"

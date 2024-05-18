@@ -10,6 +10,7 @@ Could be a start-up idea, idk.
 - [📺 Tech Stack](#%F0%9F%93%BA-tech-stack)
 - [Requirements](#requirements)
 - [🚀 Get started](#%F0%9F%9A%80-get-started)
+- [Notes Backblaze](#notes-backblaze)
 
 ## 📺 Tech Stack
 
@@ -42,16 +43,18 @@ bun s3:create
 
 # AWS Configure first (Just use placeholders: https://github.com/localstack/localstack/issues/8424)
 aws configure
-> AWS Access Key ID [****************test]: test
-> AWS Secret Access Key [****************test]: test
+> AWS Access Key ID [****************root]: root
+> AWS Secret Access Key [****************password]: password
 > Default region name [us-east-1]: us-east-1 # Because has the features we need.
 > Default output format [None]:
 
 # Create a bucket in s3.
-aws --endpoint-url=http://localhost:4566 s3api create-bucket --bucket spend-snap --region us-east-1
+aws --endpoint-url=http://localhost:9000 s3api create-bucket --bucket spend-snap --region us-east-1
 
 # List buckets
-aws --endpoint-url=http://localhost:45666 s3api list-buckets
+aws --endpoint-url=http://localhost:9000 s3api list-buckets
+
+# Alternatively, just visit http://localhost:9000 for the Web UI. Use the root(access key id) and password (access key) to login.
 ```
 
 3. Copy and fill env
@@ -66,6 +69,36 @@ cp .env.example .env
 bun install
 bun run dev
 ```
+
+## Notes Backblaze
+
+- Go to **Application Keys** create a new application key (for the specific project) and save it.
+- Setup cors in Backblaze Bucket
+
+```sh
+brew install b2-tools
+
+# Use your master key here
+b2 account authorize
+
+b2 bucket update --cors-rules '[
+    {
+        "corsRuleName": "downloadFromAnyOriginWithUpload",
+        "allowedOrigins": [
+            "*"
+        ],
+        "allowedHeaders": [
+            "*"
+        ],
+        "allowedOperations": [
+            "s3_put"
+        ],
+        "maxAgeSeconds": 3600
+    }
+]' bucketNameHere
+```
+
+- `Endpoint` has to be s3.<region>.<backblazedomain>.com
 
 <!-- # SolidStart
 

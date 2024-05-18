@@ -7,6 +7,8 @@ let instance;
 new S3rver({
   port: 9000,
   address: "127.0.0.1",
+  accessKeyId: "root",
+  accessKey: "password",
   silent: false,
   directory: "./data/s3",
   configureBuckets: [
