@@ -6,7 +6,7 @@ import {
 } from "../schema/collations";
 import { eq, sql } from "drizzle-orm";
 import { HTTPException } from "hono/http-exception";
-import { alias } from "drizzle-orm/sqlite-core";
+import { isDefined } from "../utils/isDefined";
 
 export const collationsDAO = {
   collation: {
@@ -31,21 +31,48 @@ export const collationsDAO = {
       return collation?.[0] ?? null;
     },
 
-    /** Gets a collation joined with its relations. */
+    /** Gets a collation joined with its relations. (Really good example of joins, but not used in favor of pagination) */
     getCollationDetailsById: async (collationId: string) => {
-      const receipts = alias(receiptTable, "receipts");
+      // const receipts = alias(receiptTable, "receipts");
 
-      const collation = await db
+      const collationsAndReceipts = await db
         .select()
         .from(collationTable)
         .where(eq(collationTable.id, collationId))
-        // TODO: add joins here.
-        // .leftJoin(receiptTable, eq(collationTable.id, receiptTable.collationId))
+        .leftJoin(receiptTable, eq(collationTable.id, receiptTable.collationId))
         .execute();
 
-      console.log(collation);
+      if (!collationsAndReceipts.length) return null;
 
-      return collation?.[0] ?? null;
+      type CollationWithReceipts =
+        (typeof collationsAndReceipts)[0]["collation"] & {
+          receipts: Array<(typeof collationsAndReceipts)[0]["receipt"]>;
+        };
+
+      /** A nested form of collation with its receipts. */
+      const collationWithReceipts = collationsAndReceipts.reduce(
+        (
+          _collationWithReceipts: CollationWithReceipts,
+          collationANDReceipt,
+          index
+        ) => {
+          // Assign the found collation.
+          if (index === 0)
+            _collationWithReceipts = {
+              ...collationANDReceipt.collation,
+              receipts: [],
+            };
+
+          // Assign the relations.
+          if (collationANDReceipt.receipt)
+            _collationWithReceipts.receipts.push(collationANDReceipt.receipt);
+
+          return _collationWithReceipts;
+        },
+        {} as CollationWithReceipts
+      );
+
+      return collationWithReceipts;
     },
 
     createCollation: async (params: typeof collationTable.$inferInsert) => {
@@ -69,7 +96,26 @@ export const collationsDAO = {
   },
 
   receipt: {
-    getReceiptsByCollationId: async (collationId: string) => {
+    getReceiptsByCollationId: async (
+      collationId: string,
+      /** TODO: turn this into a reusable type. */
+      options?: {
+        /** Can start at 0. */
+        page?: number;
+        /** @defaultValue 20 */
+        limit?: number;
+      }
+    ) => {
+      if (isDefined(options?.page)) {
+        const pageSize = options.limit ?? 20;
+
+        return await db
+          .select()
+          .from(receiptTable)
+          .where(eq(receiptTable.collationId, collationId))
+          .offset(options.page * pageSize)
+          .limit(options.limit ?? pageSize);
+      }
       const receipts = await db
         .select()
         .from(receiptTable)

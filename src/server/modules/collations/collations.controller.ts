@@ -2,11 +2,13 @@ import { collationsDAO } from "@/server/dao/collations.dao";
 import { Hono } from "hono";
 import { authMiddleware, requireAuthMiddleware } from "../auth/auth.middleware";
 import { tbValidator } from "@hono/typebox-validator";
-import { Type as T } from "@sinclair/typebox";
+import { Awaited, Type as T, TNumber } from "@sinclair/typebox";
 import { HTTPException } from "hono/http-exception";
-import s3 from "@/server/s3";
+import {
+  generateUploadUrl,
+  transferFileFromTempToPermanent,
+} from "@/server/s3";
 import { createId } from "@paralleldrive/cuid2";
-import { privateConfig } from "@/config.private";
 
 export const collationsController = new Hono()
   .basePath("/collations")
@@ -45,16 +47,14 @@ export const collationsController = new Hono()
         createdById: user.id,
       });
 
-      console.log(newCollation, "\n\n");
-
       return c.json({ newCollation });
     }
   )
-  // Get Collation Details
+  // Get Collation By Id
   .get("/:collationId", async (c) => {
     const collationId = c.req.param("collationId");
 
-    const collation = await collationsDAO.collation.getCollationDetailsById(
+    const collation = await collationsDAO.collation.getCollationById(
       collationId
     );
 
@@ -96,7 +96,40 @@ export const collationsController = new Hono()
       return c.json({ spenders });
     }
   )
-  // Get Total Spent in Collation TODO: Deprecate?
+  // Get Receipts By Collation
+  .get(
+    "/:collationId/receipts",
+    tbValidator(
+      "query",
+      T.Object({
+        page: T.String({
+          pattern: "^\\d+$",
+          description: "Should be a number.",
+        }),
+        limit: T.String({
+          pattern: "^\\d+$",
+          description: "Should be a number.",
+        }),
+      })
+    ),
+    async (c) => {
+      const collationId = c.req.param("collationId");
+      const input = c.req.valid("query");
+
+      const receipts = await collationsDAO.receipt.getReceiptsByCollationId(
+        collationId,
+        {
+          page: parseInt(input.page),
+          limit: parseInt(input.limit),
+        }
+      );
+
+      return c.json({
+        receipts: receipts,
+      });
+    }
+  )
+  // Get Total Spent in Collation
   .get("/:collationId/receipt/totalSpent", async (c) => {
     const collationId = c.req.param("collationId");
 
@@ -111,30 +144,16 @@ export const collationsController = new Hono()
     return c.json({ totalSpent });
   })
   // Generate Upload URL for Receipt Image (Do this before Create Receipt)
-  .get(
-    "/:collationId/receipt/generate-upload-url",
-    requireAuthMiddleware,
-    async (c) => {
-      /** This is the filename. */
-      const uniqueId = createId();
+  .get("/receipt/generateUploadUrl", requireAuthMiddleware, async (c) => {
+    const uniqueId = createId();
 
-      const s3UploadUrl = await s3.createPresignedPost({
-        Fields: {
-          key: `temp/${uniqueId}`,
-        },
-        Conditions: [
-          ["starts-with", "$key", "temp/"],
-          ["starts-with", "$Content-Type", "image/"],
-          ["content-length-range", 0, 8000000], // 8 MB
-        ],
-      });
+    const signedUrl = await generateUploadUrl(uniqueId);
 
-      return c.json({ uploadUrl: s3UploadUrl });
-    }
-  )
+    return c.json({ uniqueId: uniqueId, signedUrl: signedUrl });
+  })
   // Create Receipt
   .post(
-    "/:collationId/receipt",
+    "/:collationId/receipts",
     requireAuthMiddleware,
     tbValidator(
       "json",
@@ -164,30 +183,6 @@ export const collationsController = new Hono()
       const collationId = c.req.param("collationId");
       const validJSON = c.req.valid("json");
 
-      /** Call this right after the record is saved. */
-      async function transferFileToPermanent() {
-        const oldKey = `temp/${validJSON.imageObjKey}`;
-        const newKey = `permanent/${validJSON.imageObjKey}`;
-
-        // Copy the object to the new location.
-        await s3
-          .copyObject({
-            // Add the bucketname in CopySource because you can technically copy from outside a bucket.
-            CopySource: `${privateConfig.s3.BUCKET_NAME}/${oldKey}`,
-            // This is the write destination bucket.
-            Bucket: privateConfig.s3.BUCKET_NAME,
-            // No need to add the bucketname here again because this is the write key.
-            Key: newKey,
-          })
-          .promise();
-
-        // Delete from old location.
-        await s3.deleteObject({
-          Bucket: privateConfig.s3.BUCKET_NAME,
-          Key: oldKey,
-        });
-      }
-
       // Validate that user has inputted either `totalAmount` or `segmentedAmounts` (exclusively).
       const bothAreProvided =
         validJSON.totalAmount && validJSON.segmentedAmounts;
@@ -208,6 +203,10 @@ export const collationsController = new Hono()
       if (!collation)
         throw new HTTPException(404, { message: "Collation not found." });
 
+      let receipt: Awaited<
+        ReturnType<typeof collationsDAO.receipt.createReceipt>
+      > | null = null;
+
       // ✨ WRITE: Receipt with Segmented Amounts.
       if (validJSON.segmentedAmounts) {
         const totalAmount = validJSON.segmentedAmounts.reduce(
@@ -215,7 +214,7 @@ export const collationsController = new Hono()
           0
         );
 
-        const receipt = await collationsDAO.receipt.createReceipt({
+        receipt = await collationsDAO.receipt.createReceipt({
           collationId: collationId,
           segmentedAmounts: validJSON.segmentedAmounts,
           totalAmount: totalAmount,
@@ -224,7 +223,7 @@ export const collationsController = new Hono()
       }
       // ✨ WRITE: Receipt with Total Amounts.
       else if (validJSON.totalAmount) {
-        const receipt = await collationsDAO.receipt.createReceipt({
+        receipt = await collationsDAO.receipt.createReceipt({
           collationId: collationId,
           totalAmount: validJSON.totalAmount,
           imageObjKey: validJSON.imageObjKey,
@@ -234,6 +233,10 @@ export const collationsController = new Hono()
       // Assumes both operations were successful.
       // Transfer the image to permanent.
       // TODO: Wrap in transaction (too much work for me :D, so not doing that for now).
-      await transferFileToPermanent();
+      await transferFileFromTempToPermanent(validJSON.imageObjKey);
+
+      return c.json({
+        receipt: receipt,
+      });
     }
   );
