@@ -33,10 +33,14 @@ import Modal, { createModalOpeners } from "./Modal";
 
 type AddNewReceiptModalProps = {
   collationId?: string;
+  /** Add a refetch here if needed. */
+  onSuccess?: () => void;
 };
 export default function AddNewReceiptModal(
   props: VoidProps<AddNewReceiptModalProps>
 ) {
+  const FORM_TOASTID = "add-new-receipt-form-toast";
+
   // ===========================================================================
   // States
   // ===========================================================================
@@ -95,13 +99,44 @@ export default function AddNewReceiptModal(
         try {
           if (!props.collationId) return;
 
-          const response = await hc.collations[":collationId"].receipt.$post({
+          // 1. Get the upload URL
+          toast.loading("Getting Signed URL...", { id: FORM_TOASTID });
+
+          console.log("GETTING UPLOAD URL.");
+
+          const getSignedUrlResponse =
+            await hc.collations.receipt.generateUploadUrl.$get();
+
+          const { uniqueId, signedUrl } = await getSignedUrlResponse.json();
+
+          if (!signedUrl) throw new Error("No upload url.");
+
+          // 2. POST to the upload URL
+          toast.loading("Uploading Image...", { id: FORM_TOASTID });
+
+          const file = data("image") as unknown as File;
+          const formData = new FormData();
+          formData.append("Content-Type", file.type);
+          formData.append("file", file);
+
+          // const headers = new Headers();
+          // headers.append("Content-Type", file.type);
+
+          const fileUploadResponse = await fetch(signedUrl, {
+            method: "PUT",
+            body: formData,
+          });
+
+          // 3. Add Receipt (Attach the imageObjectKey to request).
+          toast.loading("Adding Receipt...", { id: FORM_TOASTID });
+
+          const response = await hc.collations[":collationId"].receipts.$post({
             param: {
               collationId: props.collationId,
             },
             json: {
               /** @ts-ignore */
-              imageObjKey: undefined, // TODO, this is a state and image upload returned by S3,
+              imageObjKey: uniqueId, // TODO, this is a state and image upload returned by S3,
               segmentedAmounts: values.segmentedAmounts,
               totalAmount: values.totalAmount,
             },
@@ -112,10 +147,15 @@ export default function AddNewReceiptModal(
             throw Error();
           }
 
+          toast.success("Added Receipt!", { id: FORM_TOASTID });
+
+          props.onSuccess?.();
           closeAddNewReceiptModal();
         } catch (e) {
+          console.log(e);
           toast.error("Something went wrong.", {
-            duration: 500,
+            duration: 1000,
+            id: FORM_TOASTID,
           });
         }
       },
@@ -142,7 +182,6 @@ export default function AddNewReceiptModal(
   return (
     <>
       <Modal
-        forceOpen
         id="add-new-receipt-modal"
         modalActions={
           <>
@@ -156,7 +195,33 @@ export default function AddNewReceiptModal(
           </>
         }
       >
-        {/* {JSON.stringify(data)} */}
+        {/* <Button
+          onClick={async () => {
+            const promise = () =>
+              new Promise((resolve) => setTimeout(resolve, 800));
+
+            // toast.promise(promise, {
+            //   loading: "Loading...",
+            //   success: (data) => {
+            //     return `toast has been added`;
+            //   },
+            //   error: "Error",
+            // });
+
+            toast.loading("Uploading...", { id: "form" });
+            await promise();
+            toast.promise(promise, {
+              loading: "Saving...",
+              success: (data) => {
+                return `Toast has been added`;
+              },
+              error: "error",
+              id: "form",
+            });
+          }}
+        >
+          Hea
+        </Button> */}
         <h3 class="font-bold text-lg">Add New Receipt</h3>
 
         <form id="add-new-receipt-form" use:form={form}>
@@ -224,57 +289,55 @@ export default function AddNewReceiptModal(
                       console.log("rerender me");
 
                       return (
-                        <div class="flex gap-x-1 w-full">
-                          <div class="w-full flex gap-x-2 items-center">
-                            <div
-                              class="rounded-full bg-gray-100 w-8 h-8 flex-shrink-0"
-                              style={{
-                                ...(!!spenderObject && {
-                                  "background-image": `url(${
-                                    spenderObject()?.imageURL
-                                  })`,
-                                  "background-size": "cover",
-                                  "background-position": "center",
-                                }),
-                              }}
-                            />
-                            <select
-                              name={`segmentedAmounts.${index}.spenderId`}
-                              class="select select-sm select-primary w-full max-w-xs"
-                              onChange={(e) => {
-                                if (e.currentTarget.value === "new-spender") {
-                                  openAddNewReceiptSpenderModal();
+                        <div class="w-full flex gap-x-2 items-center">
+                          <div
+                            class="rounded-full bg-gray-100 w-8 h-8 flex-shrink-0"
+                            style={{
+                              ...(!!spenderObject && {
+                                "background-image": `url(${
+                                  spenderObject()?.imageURL
+                                })`,
+                                "background-size": "cover",
+                                "background-position": "center",
+                              }),
+                            }}
+                          />
+                          <select
+                            name={`segmentedAmounts.${index}.spenderId`}
+                            class="select select-sm select-primary w-full max-w-xs"
+                            onChange={(e) => {
+                              if (e.currentTarget.value === "new-spender") {
+                                openAddNewReceiptSpenderModal();
 
-                                  setFields(
-                                    `segmentedAmounts.${index}.spenderId`,
-                                    undefined
-                                  );
-                                }
-                              }}
-                            >
-                              <option disabled value={undefined}>
-                                Pick a spender
-                              </option>
+                                setFields(
+                                  `segmentedAmounts.${index}.spenderId`,
+                                  undefined
+                                );
+                              }
+                            }}
+                          >
+                            <option disabled value={undefined}>
+                              Pick a spender
+                            </option>
 
-                              <For each={spendersQuery?.data?.spenders ?? []}>
-                                {(spender) => (
-                                  <option value={spender.id}>
-                                    {spender.name}
-                                  </option>
-                                )}
-                              </For>
+                            <For each={spendersQuery?.data?.spenders ?? []}>
+                              {(spender) => (
+                                <option value={spender.id}>
+                                  {spender.name}
+                                </option>
+                              )}
+                            </For>
 
-                              <option value="new-spender">
-                                [ + Add New Spender ]
-                              </option>
-                            </select>
-                          </div>
+                            <option value="new-spender">
+                              [ + Add New Spender ]
+                            </option>
+                          </select>
 
                           <input
                             name={`segmentedAmounts.${index}.amount`}
-                            type="text"
+                            type="number"
                             placeholder="Amount (e.g. 500)"
-                            class="input input-bordered w-full input-sm"
+                            class="input input-bordered w-full input-sm no-arrows"
                           />
                           <button
                             type="button"
