@@ -1,9 +1,4 @@
-import Counter from "@/components/Counter";
-import { useData } from "vike-solid/useData";
-import { Data } from "./+data";
 import { useStore } from "@nanostores/solid";
-import { $count } from "@/contexts/countStore";
-import Button from "@/components/Button";
 import { $user } from "@/contexts/authStore";
 
 export default function Home() {
