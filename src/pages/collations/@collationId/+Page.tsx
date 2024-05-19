@@ -93,6 +93,7 @@ export default function CollationDetailsPage() {
       }
     },
     enabled: !!routeParams?.["collationId"],
+    staleTime: 10000, // Only try to refetch again after 10s. I'm okay with stale values.
   }));
 
   // ===========================================================================
