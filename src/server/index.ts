@@ -9,6 +9,11 @@ import { appRouter } from "./_app";
 
 const app = new Hono();
 
+// Health checks
+app.get("/up", async (c) => {
+  return c.newResponse("OK", { status: 200 });
+});
+
 // For the Backend APIs
 app.route("/api", appRouter);
 
@@ -41,6 +46,7 @@ app.get("*", async (c, next) => {
   }
 });
 
+// Returning errors.
 app.onError((_, c) => {
   return c.json(
     {

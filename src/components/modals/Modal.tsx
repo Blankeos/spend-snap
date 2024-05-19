@@ -1,7 +1,5 @@
 import { cn } from "@/lib/cn";
 import { createSignal, FlowProps, JSXElement, Show } from "solid-js";
-import { T } from "../../../dist/server/chunks/chunk-CJJHhQrS";
-import { createStore } from "solid-js/store";
 
 type ModalProps = {
   id: string;
@@ -49,7 +47,7 @@ export default function Modal(props: FlowProps<ModalProps>) {
           <div class="modal-action">{props.modalActions}</div>
         </Show>
       </div>
-      <form method="dialog" class="modal-backdrop" onClick={props.onCloseClick}>
+      <form method="dialog" class="modal-backdrop">
         <button>close</button>
       </form>
     </dialog>
