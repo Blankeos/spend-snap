@@ -4,7 +4,9 @@ import { db, client } from "@/server/db";
 async function migrateUp() {
   try {
     const result = await client.execute("SELECT 1");
-    console.log("🔌 Connected to the database successfully.");
+    console.log(
+      `🔌 Connected to the database successfully. ${process.env.DATABASE_URL}`
+    );
 
     await migrate(db, { migrationsFolder: "./migrations" });
 

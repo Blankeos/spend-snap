@@ -30,5 +30,6 @@ Thumbs.db
 
 local.db
 local-backup.db
+local-*.db
 
 /data
