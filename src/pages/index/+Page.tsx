@@ -4,8 +4,11 @@ import { Data } from "./+data";
 import { useStore } from "@nanostores/solid";
 import { $count } from "@/contexts/countStore";
 import Button from "@/components/Button";
+import { $user } from "@/contexts/authStore";
 
 export default function Home() {
+  const authStore = useStore($user);
+
   return (
     <>
       <section class="py-20 bg-primary">
@@ -24,7 +27,7 @@ export default function Home() {
             class="btn bg-white text-primary text-sm py-2 px-8 rounded-md w-max"
             href="/register"
           >
-            Open an Account
+            {authStore().user ? "Open Dashboard" : "Open an Account"}
           </a>
         </div>
       </section>
@@ -70,7 +73,13 @@ export default function Home() {
             </div>
           </div>
           <div class="flex flex-col gap-y-2">
-            <h4 class="text-xl font-semibold">Hi, it's Carlo 👋</h4>
+            <h4 class="text-xl font-semibold">
+              Hi, it's{" "}
+              <a class="text-primary" href="https://carlo.vercel.app/">
+                Carlo
+              </a>{" "}
+              👋
+            </h4>
             <p>
               I built this project in{" "}
               <span class="font-semibold">May 6 2024</span> so I can track

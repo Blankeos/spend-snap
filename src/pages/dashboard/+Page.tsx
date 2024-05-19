@@ -34,13 +34,13 @@ export default function DashboardPage() {
       <main class="mx-auto max-w-5xl px-7 py-12">
         <div class="flex flex-col gap-y-5">
           <div class="text-3xl">
-            Welcome back <b>{authStore().user?.username}</b>
+            👋 Welcome back <b>{authStore().user?.username}!</b>
           </div>
 
           <div class="h-2" />
 
           <div class="flex gap-x-5 items-center">
-            <h1 class="text-3xl">Collations</h1>
+            <h1 class="text-3xl">Your Collations</h1>
             <button
               class="btn btn-ghost btn-sm5 border-2 border-gray-100"
               onClick={() => {
@@ -50,7 +50,10 @@ export default function DashboardPage() {
               + Create new collation
             </button>
           </div>
-          <p>Here, you can manage the your receipt collations in one place.</p>
+          <p class="text-gray-500">
+            Each <span class="font-semibold">collation</span> is like a folder
+            of the receipts you tracked for a specific occasion.
+          </p>
         </div>
 
         <div class="h-10" />
