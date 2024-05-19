@@ -80,11 +80,16 @@ export default function Home() {
               </a>{" "}
               👋
             </h4>
-            <p>
+            <p class="text-sm md:text-base">
               I built this project in{" "}
               <span class="font-semibold">May 6 2024</span> so I can track
-              receipts for my company's trip. Anyway, not sure what I'll do with
-              this. Built it with 💙 using <b>SolidJS + Hono + Vike</b>.
+              receipts for my company's trip. Just a personal project while
+              learning other tech as I get into indie-hacking. Might turn this
+              into a small startup idk.
+            </p>
+            <p class="text-xs text-gray-700">
+              Built it with 💙 using{" "}
+              <b>SolidJS + Hono + Vike + Drizzle + Turso + B2 Backblaze</b>.
             </p>
           </div>
         </div>
