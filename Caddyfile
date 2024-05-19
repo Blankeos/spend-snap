@@ -1,0 +1,3 @@
+spend-snap.carlotaleon.net {
+    reverse_proxy localhost:3000
+}
