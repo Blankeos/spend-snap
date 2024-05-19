@@ -34,12 +34,12 @@ export default function Nav() {
 
   return (
     <nav class="bg-primary flex flex-col gap-y-2 items-center p-3">
-      <div class="relative text-white font-bold items-start">
+      <a class="relative text-white font-bold items-start" href="/">
         <span>Spend Snap</span>
         <span class="absolute -top-1 left-[102%] bg-purple-500 text-white rounded-sm text-xs py-[1px] px-1 border-purple-200 border">
           Beta
         </span>
-      </div>
+      </a>
       <ul class="container flex items-center text-gray-200 justify-center">
         <li class={`border-b-2 ${active("/")} mx-1.5 sm:mx-6`}>
           <a href="/">Home {authStore().loading}</a>
@@ -65,7 +65,7 @@ export default function Nav() {
             <a href="/dashboard">Dashboard</a>
           </li>
           <button
-            class={`border-b-2 mx-1.5 sm:mx-6 border-transparent hover:border-sky-600`}
+            class={`border-b-2 mx-1.5 sm:mx-6 border-transparent hover:border-purple-500`}
             onClick={logout}
           >
             Logout
