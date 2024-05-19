@@ -94,7 +94,10 @@ export default function AddNewReceiptModal(
           const file = data("image") as unknown as File;
 
           // 1. Get the upload URL
-          toast.loading("Getting Signed URL...", { id: FORM_TOASTID });
+          toast.loading("Getting Signed URL...", {
+            id: FORM_TOASTID,
+            duration: 10000,
+          }); // 10 seconds
 
           console.log("GETTING UPLOAD URL.");
 
@@ -106,7 +109,10 @@ export default function AddNewReceiptModal(
           if (!signedUrl) throw new Error("No upload url.");
 
           // 2. POST to the upload URL
-          toast.loading("Uploading Image...", { id: FORM_TOASTID });
+          toast.loading("Uploading Image...", {
+            id: FORM_TOASTID,
+            duration: 20000,
+          }); // 20 seconds
 
           // ----- PUT approach (What works for BackBlaze) -----
           const fileUploadResponse = await fetch(signedUrl, {
@@ -118,30 +124,39 @@ export default function AddNewReceiptModal(
           });
 
           // 3. Add Receipt (Attach the imageObjectKey to request).
-          toast.loading("Adding Receipt...", { id: FORM_TOASTID });
+          // Since it's the last, use a promise for better animation with sonener
+          toast.promise(
+            async () => {
+              const response = await hc.collations[
+                ":collationId"
+              ].receipts.$post({
+                param: {
+                  collationId: props.collationId!,
+                },
+                json: {
+                  /** @ts-ignore */
+                  imageObjKey: uniqueId, // TODO, this is a state and image upload returned by S3,
+                  segmentedAmounts: values.segmentedAmounts,
+                  totalAmount: values.totalAmount,
+                },
+              });
 
-          const response = await hc.collations[":collationId"].receipts.$post({
-            param: {
-              collationId: props.collationId,
+              if (!response.ok) {
+                const error = await response.json();
+                throw Error();
+              }
+
+              props.onSuccess?.();
+              closeAddNewReceiptModal();
             },
-            json: {
-              /** @ts-ignore */
-              imageObjKey: uniqueId, // TODO, this is a state and image upload returned by S3,
-              segmentedAmounts: values.segmentedAmounts,
-              totalAmount: values.totalAmount,
-            },
-          });
-
-          if (!response.ok) {
-            const error = await response.json();
-            throw Error();
-          }
-
-          toast.success("Added Receipt!", { id: FORM_TOASTID });
-
-          props.onSuccess?.();
-
-          closeAddNewReceiptModal();
+            {
+              id: FORM_TOASTID,
+              duration: 1000,
+              loading: "Adding Receipt...",
+              success: "Added Receipt",
+              error: "Failed to add Receipt. Please try again.",
+            }
+          );
         } catch (e) {
           console.log(e);
           toast.error("Something went wrong.", {
