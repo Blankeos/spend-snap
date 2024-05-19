@@ -1,4 +1,9 @@
-import { IconHappy, IconLoading } from "@/components/icons";
+import {
+  IconEmojiSad,
+  IconHappy,
+  IconLoading,
+  IconSad,
+} from "@/components/icons";
 import { $user } from "@/contexts/authStore";
 import { useStore } from "@nanostores/solid";
 import { createPresence } from "@solid-primitives/presence";
@@ -19,7 +24,15 @@ type ProtectedProps = {
   /** @defaultValue /login */
   fallback?: string;
 
-  /** When authenticated, redirect to this page. @defaultValue undefined */
+  /**
+   * When authenticated, redirect to this page instead. By default, not used.
+   *
+   * If used, the usecase is more for /login and /register redirection.
+   *
+   * If not used, the usecase is completely for protected routes.
+   *
+   * @defaultValue undefined
+   */
   authedRedirect?: string;
 };
 
@@ -82,24 +95,43 @@ export default function Protected(props: FlowProps<ProtectedProps>) {
                 opacity: isShown() ? 1 : "0",
               }}
             />
-            <IconHappy
-              font-size="3rem"
-              class="absolute"
-              style={{
-                "transition-duration": "800ms",
-                scale: isShown() ? "95%" : "110%",
-                opacity: isShown() ? "0" : 1,
-              }}
-            />
+            <Show
+              when={authStore().user}
+              fallback={
+                <IconSad
+                  font-size="3rem"
+                  class="absolute"
+                  style={{
+                    "transition-duration": "800ms",
+                    scale: isShown() ? "95%" : "110%",
+                    opacity: isShown() ? "0" : 1,
+                  }}
+                />
+              }
+            >
+              <IconHappy
+                font-size="3rem"
+                class="absolute"
+                style={{
+                  "transition-duration": "800ms",
+                  scale: isShown() ? "95%" : "110%",
+                  opacity: isShown() ? "0" : 1,
+                }}
+              />
+            </Show>
           </div>
 
-          <Show
-            fallback={<span>Looking for User...</span>}
-            when={authStore().user && !authStore().loading}
-          >
+          <Show when={!authStore().user && authStore().loading}>
+            <span>Looking for User...</span>
+          </Show>
+
+          <Show when={authStore().user && !authStore().loading}>
             <span>Hi {authStore().user?.username}!</span>
           </Show>
-          <span></span>
+
+          <Show when={!authStore().user && !authStore().loading}>
+            <span>Not authenticated</span>
+          </Show>
         </div>
       </Show>
       <Show when={!isShown()}>{props.children}</Show>

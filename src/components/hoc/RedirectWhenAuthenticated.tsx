@@ -1,6 +1,20 @@
-import { FlowProps, VoidProps } from "solid-js";
+import { ComponentProps, FlowProps, mergeProps, VoidProps } from "solid-js";
 import Protected from "./Protected";
 
-export default function RedirectWhenAuthenticated(props: FlowProps) {
-  return <Protected authedRedirect="/dashboard">{props.children}</Protected>;
+export default function RedirectWhenAuthenticated(
+  props: FlowProps<ComponentProps<typeof Protected>>
+) {
+  const defaultProps = mergeProps(
+    { fallback: "/login", authedRedirect: "/dashboard" },
+    props
+  );
+
+  return (
+    <Protected
+      authedRedirect={defaultProps.authedRedirect}
+      fallback={defaultProps.fallback}
+    >
+      {props.children}
+    </Protected>
+  );
 }
