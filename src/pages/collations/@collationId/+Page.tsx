@@ -12,12 +12,19 @@ import createTween from "@solid-primitives/tween";
 import { createQuery } from "@tanstack/solid-query";
 import { createEffect, createMemo, createSignal, on, Show } from "solid-js";
 import { usePageContext } from "vike-solid/usePageContext";
-import { IconAdd, IconImage, IconLoading } from "@/components/icons";
-import Button from "@/components/Button";
+import {
+  IconAdd,
+  IconImage,
+  IconLoading,
+  IconSettingsLine,
+} from "@/components/icons";
 import { createStore } from "solid-js/store";
 import ViewImageModal, {
   openViewImageModal,
 } from "@/components/modals/ViewImageModal";
+import CollationSettingsModal, {
+  createCollationSettingsModalOpener,
+} from "@/components/modals/CollationSettingsModal";
 
 export default function CollationDetailsPage() {
   const { routeParams } = usePageContext();
@@ -29,8 +36,14 @@ export default function CollationDetailsPage() {
     imageObjectKey: string;
   } | null>(null);
 
+  const {
+    collationSettingsModalData,
+    openCollationSettingsModal,
+    closeCollationSettingsModal,
+  } = createCollationSettingsModalOpener();
+
   const [paginatedStore, setPaginatedStore] = createStore({
-    pageSize: 5,
+    pageSize: 20,
     currentPage: 0,
     hasNext: true,
     hasPrevious: false,
@@ -52,6 +65,7 @@ export default function CollationDetailsPage() {
       }
     },
     enabled: !!routeParams?.["collationId"],
+    staleTime: Infinity,
   }));
 
   const totalSpentQuery = createQuery(() => ({
@@ -140,16 +154,35 @@ export default function CollationDetailsPage() {
 
     if (paginatedStore.currentPage <= 0)
       setPaginatedStore("hasPrevious", (hasPrevious) => false);
+
+    if (paginatedStore.currentPage > 0)
+      setPaginatedStore("hasPrevious", (hasPrevious) => true);
   });
 
   return (
     <>
       <div class="max-w-5xl mx-auto px-8 py-6">
         <header class="flex flex-col gap-y-2">
-          <h1 class="text-2xl">
-            <b class="font-bold">Collation:</b>
-            {collationQuery?.data?.name}
-          </h1>
+          <div class="flex justify-between gap-x-5">
+            <h1 class="text-2xl">
+              <b class="font-bold">Collation:</b>
+              {collationQuery?.data?.name}
+            </h1>
+
+            <ShowWhenAuthenticated>
+              <button
+                onClick={() => {
+                  routeParams?.["collationId"] &&
+                    openCollationSettingsModal({
+                      collationId: routeParams["collationId"],
+                    });
+                }}
+                class="grid place-items-center h-10 w-10 border-primary text-primary rounded-md flex-shrink-0 active:scale-95 border"
+              >
+                <IconSettingsLine font-size="1.2rem" />
+              </button>
+            </ShowWhenAuthenticated>
+          </div>
 
           <p class="text-gray-600">
             <b class="font-medium">Description:</b>{" "}
@@ -211,15 +244,18 @@ export default function CollationDetailsPage() {
 
         <div class="flex gap-x-3 items-center">
           <h2 class="text-lg font-bold">Receipts</h2>
-          <button
-            class="btn btn-xs border btn-ghost border-gray-200 flex gap-x-1"
-            onClick={() => {
-              openAddNewReceiptModal();
-            }}
-          >
-            <IconAdd class="text-gray-600" />
-            <span>Add New</span>
-          </button>
+
+          <ShowWhenAuthenticated>
+            <button
+              class="btn btn-xs border btn-ghost border-gray-200 flex gap-x-1"
+              onClick={() => {
+                openAddNewReceiptModal();
+              }}
+            >
+              <IconAdd class="text-gray-600" />
+              <span>Add New</span>
+            </button>
+          </ShowWhenAuthenticated>
         </div>
 
         {/* {JSON.stringify(paginatedStore)} */}
@@ -279,6 +315,10 @@ export default function CollationDetailsPage() {
       {/* MODALS */}
       <ViewImageModal imgObjectKey={viewImageModalData()?.imageObjectKey} />
       <ShowWhenAuthenticated>
+        <CollationSettingsModal
+          modalData={collationSettingsModalData()}
+          onClose={closeCollationSettingsModal}
+        />
         <AddNewReceiptModal
           collationId={routeParams?.["collationId"]}
           onSuccess={() => {
