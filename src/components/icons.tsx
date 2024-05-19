@@ -1,7 +1,10 @@
 export { default as IconLoading } from "~icons/line-md/loading-twotone-loop";
 export { default as IconHappy } from "~icons/lets-icons/happy";
+export { default as IconSad } from "~icons/lets-icons/sad";
 export { default as IconAdd } from "~icons/mdi/plus";
 export { default as IconRemove } from "~icons/mdi/close-box";
 export { default as IconProfileDefault } from "~icons/material-symbols/person-rounded";
 export { default as IconImage } from "~icons/mdi/image";
 export { default as IconEmojiSad } from "~icons/fluent-emoji/sad-but-relieved-face";
+export { default as IconSettingsLine } from "~icons/mingcute/settings-3-line";
+export { default as IconCopy } from "~icons/solar/copy-bold-duotone";
