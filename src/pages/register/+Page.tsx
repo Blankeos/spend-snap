@@ -1,4 +1,5 @@
 import Button from "@/components/Button";
+import RedirectWhenAuthenticated from "@/components/hoc/RedirectWhenAuthenticated";
 import { setUser } from "@/contexts/authStore";
 import { hc } from "@/lib/honoClient";
 import { createForm } from "@felte/solid";
@@ -34,30 +35,32 @@ export default function Register() {
   });
 
   return (
-    <main class="text-center mx-auto text-gray-700 p-4">
-      <h1 class="mb-5 text-2xl font-medium">Register</h1>
+    <RedirectWhenAuthenticated>
+      <main class="text-center mx-auto text-gray-700 p-4">
+        <h1 class="mb-5 text-2xl font-medium">Register</h1>
 
-      <form class="form-control gap-y-3" use:form={form}>
-        <input
-          type="text"
-          name="username"
-          class="input input-bordered"
-          placeholder="Username"
-        />
-        <input
-          type="password"
-          name="password"
-          class="input input-bordered"
-          placeholder="Password"
-        />
-        <Button
-          type="submit"
-          class="btn btn-primary"
-          isLoading={isSubmitting()}
-        >
-          Register
-        </Button>
-      </form>
-    </main>
+        <form class="form-control gap-y-3" use:form={form}>
+          <input
+            type="text"
+            name="username"
+            class="input input-bordered"
+            placeholder="Username"
+          />
+          <input
+            type="password"
+            name="password"
+            class="input input-bordered"
+            placeholder="Password"
+          />
+          <Button
+            type="submit"
+            class="btn btn-primary"
+            isLoading={isSubmitting()}
+          >
+            Register
+          </Button>
+        </form>
+      </main>
+    </RedirectWhenAuthenticated>
   );
 }

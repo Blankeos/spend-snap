@@ -8,26 +8,49 @@ import {
   createSignal,
   FlowProps,
   Match,
+  mergeProps,
   onMount,
   Show,
   Switch,
 } from "solid-js";
 import { navigate } from "vike/client/router";
 
-export default function Protected(props: FlowProps) {
+type ProtectedProps = {
+  /** @defaultValue /login */
+  fallback?: string;
+
+  /** When authenticated, redirect to this page. @defaultValue undefined */
+  authedRedirect?: string;
+};
+
+export default function Protected(props: FlowProps<ProtectedProps>) {
+  const defaultProps = mergeProps({ fallback: "/login" }, props);
+
   const TRANSITION_DURATION = 1000;
   const authStore = useStore($user);
   const [isShown, setIsShow] = createSignal(true);
+
   createEffect(() => {
     if (authStore().loading) return; // Still fetching. Don't do anything.
 
     // Stopped fetching. User Exists.
     if (authStore().user) {
+      // When there's a user and there's a "redirect". Go to it.
+      // Usecase: Going into /login, but there's actually a user.
+      if (props.authedRedirect) {
+        navigate(props.authedRedirect);
+        return;
+      }
+
+      // Remove the protector.
       setIsShow(false);
     }
 
     if (!authStore().user && !authStore().loading) {
-      navigate("/login");
+      navigate(defaultProps.fallback);
+
+      // Remove the protector.
+      setIsShow(false);
     }
   });
 
@@ -76,13 +99,10 @@ export default function Protected(props: FlowProps) {
           >
             <span>Hi {authStore().user?.username}!</span>
           </Show>
-          {/* <Show when={authStore().user && !authStore().loading}>
-            <span>Hi {authStore().user?.username}!</span>
-          </Show> */}
           <span></span>
         </div>
       </Show>
-      <Show when={authStore().user}>{props.children}</Show>
+      <Show when={!isShown()}>{props.children}</Show>
     </>
   );
 }

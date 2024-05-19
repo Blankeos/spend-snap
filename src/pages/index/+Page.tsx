@@ -20,14 +20,17 @@ export default function Home() {
             Unify all your receipts and automate your expense tracking workflow.
             So you can process your claims without headache.
           </p>
-          <a class="bg-white text-primary text-sm py-2 px-8 rounded-full w-max">
+          <a
+            class="btn bg-white text-primary text-sm py-2 px-8 rounded-md w-max"
+            href="/register"
+          >
             Open an Account
           </a>
         </div>
       </section>
-      <div class="h-2 bg-primary opacity-60" />
-      <div class="h-2 bg-primary opacity-40" />
-      <div class="h-2 bg-primary opacity-10" />
+      <div class="h-4 bg-primary opacity-60" />
+      <div class="h-4 bg-primary opacity-40" />
+      <div class="h-4 bg-primary opacity-10" />
 
       <section class="py-12 flex flex-col items-center gap-y-6 px-5">
         <h2 class="text-2xl font-semibold">✨ Fantastic Features ✨</h2>
