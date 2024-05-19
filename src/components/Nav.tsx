@@ -18,8 +18,8 @@ export default function Nav() {
 
     if (result.success) {
       const user = authStore().user; // cache before logging out so we can display toast.
-      $user.set({ user: null, loading: false });
       toast.success(`${user?.username} has logged out!`);
+      $user.set({ user: null, loading: false });
       navigate("/");
     } else {
       toast.error(`Failed to log out!`);
