@@ -41,30 +41,43 @@ export default function Login() {
 
   return (
     <RedirectWhenAuthenticated>
-      <main class="text-center mx-auto text-gray-700 p-4">
-        <h1 class="mb-5 text-2xl font-medium">Login</h1>
+      <main class="text-center mx-auto text-gray-700 p-4 h-[90vh] flex flex-col justify-center items-center">
+        <div class="border rounded-xl border-gray-200 p-12">
+          <h1 class="text-2xl font-semibold mb-2">Login</h1>
+          <p class="text-primary/50 mb-5 text-sm">
+            💰 Login to use Spend Snap!
+          </p>
 
-        <form class="form-control gap-y-3" use:form={form}>
-          <input
-            type="text"
-            name="username"
-            class="input input-bordered"
-            placeholder="Username"
-          />
-          <input
-            type="password"
-            name="password"
-            class="input input-bordered"
-            placeholder="Password"
-          />
-          <Button
-            type="submit"
-            class="btn btn-primary"
-            isLoading={isSubmitting()}
-          >
-            Sign In
-          </Button>
-        </form>
+          <form class="form-control gap-y-3" use:form={form}>
+            <input
+              type="text"
+              name="username"
+              class="input input-bordered"
+              placeholder="Username"
+            />
+            <input
+              type="password"
+              name="password"
+              class="input input-bordered"
+              placeholder="Password"
+            />
+            <Button
+              type="submit"
+              class="btn btn-primary"
+              isLoading={isSubmitting()}
+            >
+              Sign In
+            </Button>
+          </form>
+
+          <div class="h-5" />
+          <p class="text-gray-400 text-sm">
+            Don't have an account?{" "}
+            <a class="text-primary" href="/register">
+              Register here
+            </a>
+          </p>
+        </div>
       </main>
     </RedirectWhenAuthenticated>
   );
