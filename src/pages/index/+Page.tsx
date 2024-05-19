@@ -11,12 +11,12 @@ export default function Home() {
       <section class="py-20 bg-primary">
         <div class="mx-auto text-center max-w-3xl px-8 flex flex-col items-center gap-y-3">
           <div class="rounded-full glass px-5 border border-primary py-1 w-max text-gray-50 text-xs">
-            Welcome To Spend Snap
+            💰 Welcome To Spend Snap
           </div>
-          <h1 class="text-5xl font-bold mb-6 text-white tracking-tight">
+          <h1 class="text-4xl md:text-5xl font-bold mb-6 text-white tracking-tight">
             Going on a Company Trip? Track your Receipts!
           </h1>
-          <p class="text-xl mb-5 text-gray-200">
+          <p class="text-base max-w-lg md:text-xl mb-5 text-white/90">
             Unify all your receipts and automate your expense tracking workflow.
             So you can process your claims without headache.
           </p>
@@ -35,23 +35,27 @@ export default function Home() {
       <section class="py-12 flex flex-col items-center gap-y-6 px-5">
         <h2 class="text-2xl font-semibold">✨ Fantastic Features ✨</h2>
         <div class="container mx-auto grid md:grid-cols-3 gap-6 text-center">
-          <div class="p-6 bg-primary rounded-lg glass">
-            <h2 class="text-2xl font-bold mb-4 text-white">Receipt Logging</h2>
-            <p class="text-gray-300">
+          <div class="p-6 bg-primary rounded-lg glass flex flex-col items-center">
+            <h2 class="text-2xl font-bold mb-4 text-white">
+              📝 Receipt Logging
+            </h2>
+            <p class="text-gray-300 max-w-lg">
               Keep a clean log of your receipt, amounts, and{" "}
               <strong>proof images</strong>!
             </p>
           </div>
-          <div class="p-6 bg-primary rounded-lg glass">
-            <h2 class="text-2xl font-bold mb-4 text-white">Shareable Links</h2>
-            <p class="text-gray-300">
+          <div class="p-6 bg-primary rounded-lg glass flex flex-col items-center">
+            <h2 class="text-2xl font-bold mb-4 text-white">
+              🔗 Shareable Links
+            </h2>
+            <p class="text-gray-300 max-w-lg">
               Let your stakeholders know exactly what you've spent on before the
               trip even ends!
             </p>
           </div>
-          <div class="p-6 bg-primary rounded-lg glass">
-            <h2 class="text-2xl font-bold mb-4 text-white">Graphs</h2>
-            <p class="text-gray-300">
+          <div class="p-6 bg-primary rounded-lg glass flex flex-col items-center">
+            <h2 class="text-2xl font-bold mb-4 text-white">📊 Graphs</h2>
+            <p class="text-gray-300 max-w-lg">
               Gain valuable insights into how much of the budget is being used.
             </p>
           </div>
@@ -68,9 +72,10 @@ export default function Home() {
           <div class="flex flex-col gap-y-2">
             <h4 class="text-xl font-semibold">Hi, it's Carlo 👋</h4>
             <p>
-              I built this project in May 6 2024 so I can track receipts for my
-              company's trip. Anyway, not sure what I'll do with this. Built it
-              with 💙 using <b>SolidJS + Hono + Vike</b>.
+              I built this project in{" "}
+              <span class="font-semibold">May 6 2024</span> so I can track
+              receipts for my company's trip. Anyway, not sure what I'll do with
+              this. Built it with 💙 using <b>SolidJS + Hono + Vike</b>.
             </p>
           </div>
         </div>
