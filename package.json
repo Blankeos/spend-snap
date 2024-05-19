@@ -17,7 +17,7 @@
     "dz:push": "drizzle-kit push",
     "dz:backup-local": "cp local.db local-backup.db",
     "dz:use-local-backup": "cp local-backup.db local.db",
-    "pm2": "pm2 start npm --name 'spend-snap' -- run preview",
+    "pm2": "pm2 start bun --name 'spend-snap' -- run preview",
     "pm2-stop": "pm2 stop spend-snap && pm2 delete spend-snap",
     "redeploy": "bun pm2-stop && bun run build && bun run pm2"
   },
