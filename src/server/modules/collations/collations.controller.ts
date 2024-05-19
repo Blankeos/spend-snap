@@ -72,6 +72,35 @@ export const collationsController = new Hono()
       spenders,
     });
   })
+  // Update Collation By ID
+  .post(
+    "/:collationId",
+    tbValidator(
+      "json",
+      T.Object({
+        name: T.Optional(T.String()),
+        description: T.Optional(T.String()),
+        public: T.Optional(T.Boolean()),
+        totalBudget: T.Optional(T.Number()),
+      })
+    ),
+    async (c) => {
+      const input = c.req.valid("json");
+      const collationId = c.req.param("collationId");
+
+      const collation = await collationsDAO.collation.updateCollationById({
+        collationId: collationId,
+        name: input.name,
+        description: input.description,
+        public: input.public,
+        totalBudget: input.totalBudget,
+      });
+
+      return c.json({
+        updatedCollation: collation,
+      });
+    }
+  )
   // Add New Segmented Amount Spender
   .post(
     "/:collationId/spenders",

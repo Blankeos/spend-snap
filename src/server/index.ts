@@ -42,9 +42,15 @@ app.get("*", async (c, next) => {
 });
 
 app.onError((_, c) => {
-  console.log(c.error);
-
-  return c.text("", 500);
+  return c.json(
+    {
+      error: {
+        message: c.error?.message ?? "Something went wrong.",
+        cause: c.error?.cause,
+      },
+    },
+    500
+  );
 });
 
 console.log("Running at http://localhost:" + privateConfig.PORT);

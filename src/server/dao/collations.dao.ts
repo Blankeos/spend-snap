@@ -87,6 +87,26 @@ export const collationsDAO = {
       return collation?.[0] ?? null;
     },
 
+    updateCollationById: async (
+      params: {
+        collationId: string;
+      } & Partial<
+        Pick<
+          typeof collationTable.$inferInsert,
+          "name" | "description" | "public" | "totalBudget"
+        >
+      >
+    ) => {
+      const collation = await db
+        .update(collationTable)
+        .set(params)
+        .where(eq(collationTable.id, params.collationId))
+        .returning()
+        .execute();
+
+      return collation?.[0] ?? null;
+    },
+
     deleteCollationById: async (collationId: string) => {
       const result = await db
         .delete(collationTable)
