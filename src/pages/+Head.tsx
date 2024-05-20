@@ -11,7 +11,7 @@ export function Head() {
       <meta name="viewport" content="width=device-width, initial-scale=1" />
       <meta
         name="og:image"
-        content="https://spend-snap.carlotaleon.net/meta.jpeg"
+        content="https://spend-snap.carlotaleon.net/og-image.jpeg"
       />
       <meta name="twitter:card" content="summary_large_image" />
       <meta name="twitter:creator" content="@carlo_taleon" />
@@ -22,7 +22,7 @@ export function Head() {
       />
       <meta
         name="twitter:image"
-        content="https://spend-snap.carlotaleon.net/meta.jpeg"
+        content="https://spend-snap.carlotaleon.net/og-image.jpeg"
       />
     </>
   );
