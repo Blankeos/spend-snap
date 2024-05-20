@@ -236,11 +236,12 @@ export default function AddNewReceiptModal(
               <span class="label-text">Receipt Amount (PHP)</span>
             </label>
 
-            <div role="tablist" class="tabs tabs-boxed mb-2">
-              <a
-                role="tab"
-                class={`overflow-hidden tab h-full ${
-                  amountInputMode() === "totalAmount" ? "tab-active" : ""
+            <div class="flex gap-x-2 mb-2">
+              <button
+                class={`overflow-hidden rounded-md px-3 w-full h-full ${
+                  amountInputMode() === "totalAmount"
+                    ? "bg-primary text-white"
+                    : ""
                 }`}
                 onClick={() => setAmountInputMode("totalAmount")}
               >
@@ -250,11 +251,12 @@ export default function AddNewReceiptModal(
                     No spender tracking
                   </span>
                 </span>
-              </a>
-              <a
-                role="tab"
-                class={`overflow-hidden tab h-full ${
-                  amountInputMode() === "segmented" ? "tab-active" : ""
+              </button>
+              <button
+                class={`overflow-hidden rounded-md px-3 w-full h-full ${
+                  amountInputMode() === "segmented"
+                    ? "bg-primary text-white"
+                    : ""
                 }`}
                 onClick={() => setAmountInputMode("segmented")}
               >
@@ -264,7 +266,7 @@ export default function AddNewReceiptModal(
                     Track by spender
                   </span>
                 </span>
-              </a>
+              </button>
             </div>
 
             <Switch>
