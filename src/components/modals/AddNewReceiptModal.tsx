@@ -239,26 +239,30 @@ export default function AddNewReceiptModal(
             <div role="tablist" class="tabs tabs-boxed mb-2">
               <a
                 role="tab"
-                class={`tab h-full ${
+                class={`overflow-hidden tab h-full ${
                   amountInputMode() === "totalAmount" ? "tab-active" : ""
                 }`}
                 onClick={() => setAmountInputMode("totalAmount")}
               >
                 <span class="flex flex-col gap-y-1 py-2">
                   <span class="leading-4">Total Amount</span>
-                  <span class="text-xs opacity-50">No spender tracking</span>
+                  <span class="text-xs opacity-50 truncate">
+                    No spender tracking
+                  </span>
                 </span>
               </a>
               <a
                 role="tab"
-                class={`tab h-full ${
+                class={`overflow-hidden tab h-full ${
                   amountInputMode() === "segmented" ? "tab-active" : ""
                 }`}
                 onClick={() => setAmountInputMode("segmented")}
               >
                 <span class="flex flex-col gap-y-1 py-2">
                   <span class="leading-4">Segmented Amount</span>
-                  <span class="text-xs opacity-50">Track by spender</span>
+                  <span class="text-xs opacity-50 truncate">
+                    Track by spender
+                  </span>
                 </span>
               </a>
             </div>
