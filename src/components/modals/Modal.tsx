@@ -47,7 +47,7 @@ export default function Modal(props: FlowProps<ModalProps>) {
           <div class="modal-action">{props.modalActions}</div>
         </Show>
       </div>
-      <form method="dialog" class="modal-backdrop">
+      <form method="dialog" class="modal-backdrop" onClick={props.onCloseClick}>
         <button>close</button>
       </form>
     </dialog>
