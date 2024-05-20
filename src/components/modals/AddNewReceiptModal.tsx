@@ -389,7 +389,6 @@ export default function AddNewReceiptModal(
               name="image"
               type="file"
               class="file-input file-input-sm w-full file-input-bordered file-input-primary"
-              accept="image/*"
             />
             <ValidationMessage for="image">
               {(messages) => (
