@@ -7,7 +7,7 @@ export function Head() {
         name="description"
         content="Easy way to collate receipts for professional trips."
       />
-      {/* <link rel="icon" href="/favicon.ico" /> */}
+      <link rel="icon" href="/favicon.svg" />
       <meta name="viewport" content="width=device-width, initial-scale=1" />
       <meta
         name="og:image"
