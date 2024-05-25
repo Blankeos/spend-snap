@@ -95,7 +95,7 @@ b2 bucket update --cors-rules '[
         ],
         "maxAgeSeconds": 3600
     }
-]' bucketNameHere
+]' spend-snap
 ```
 
 - `Endpoint` has to be s3.<region>.<backblazedomain>.com

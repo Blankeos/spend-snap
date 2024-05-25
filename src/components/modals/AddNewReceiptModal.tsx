@@ -96,7 +96,7 @@ export default function AddNewReceiptModal(
           // 1. Get the upload URL
           toast.loading("Getting Signed URL...", {
             id: FORM_TOASTID,
-            duration: 10000,
+            duration: Infinity,
           }); // 10 seconds
 
           console.log("GETTING UPLOAD URL.");
@@ -111,7 +111,7 @@ export default function AddNewReceiptModal(
           // 2. POST to the upload URL
           toast.loading("Uploading Image...", {
             id: FORM_TOASTID,
-            duration: 20000,
+            duration: Infinity,
           }); // 20 seconds
 
           // ----- PUT approach (What works for BackBlaze) -----
